@@ -254,7 +254,8 @@ CREATE TABLE tbl (`create` INT); -- так правильно
 
 ---< Типы данных >---
 
-BIT = --0 или 1 -- почитать
+BIT(1) = 0 или 1 -- Тип данных BIT используется для хранения битовых значений. Исполь зуются только нули или единицы. Например, b'111 'и b'10000000' представляют 7 и 128 соответственно.
+BIT(10) = 10001000100
 
 -- Целые
 INT          = -2 147 883 648 --> 2 147 883 647 (2^31)
@@ -2611,13 +2612,186 @@ select
 -- сгруппируем по месяцам:
 select 
 count(*),
-month(created_at),
-monthname(created_at)
+month(created_at) m,
+monthname(created_at) mn -- TODO не хочет выводить
 from media
-group by month(created_at)  ;
+group by m;
++----------+------+-----------+
+| count(*) | m    | mn        |
++----------+------+-----------+
+|       10 |    1 | January   |
+|       17 |    2 | February  |
+|        7 |    3 | March     |
+|       11 |    4 | April     |
+|       10 |    5 | May       |
+|        9 |    6 | June      |
+|        4 |    7 | July      |
+|        6 |    8 | August    |
+|        1 |    9 | September |
+|        9 |   10 | October   |
+|        7 |   11 | November  |
+|        9 |   12 | December  |
++----------+------+-----------+
+-- Не хотел выводить, т.к. sql_mode=only_full_group_by
+-- Решилось настройкой  SET sql_mode = ''; но так делать не верно.
+
+
+
+select 
+	count(*),
+	media_type_id,
+	(select name from media_types where id = media.media_type_id) as type_name,
+	created_at  -- ANY_VALUE(created_at) - выбирает случайное значение
+	from media
+	group by media_type_id;
++----------+---------------+------------+---------------------+
+| count(*) | media_type_id | type_name  | created_at          |
++----------+---------------+------------+---------------------+
+|       20 |             1 | impedit    | 1992-10-04 22:48:20 |
+|       20 |             2 | eos        | 2006-04-08 12:52:20 |
+|       20 |             3 | laudantium | 1976-01-11 19:12:26 |
+|       20 |             4 | maxime     | 1992-10-20 16:56:36 |
+|       20 |             5 | ab         | 2019-05-25 04:18:38 |
++----------+---------------+------------+---------------------+
+-- в поле created_at стои дата, но в это группе много различных дат. Так выводить неверно. Это возможно благодаря отключению режима sql_mode=only_full_group_by
+
+
+select count(*) cnt,
+user_id
+from media
+-- where cnt > 1 -- пытаемся оставить записи где количество > 1.
+-- но group by не позволит сделать так
+group by user_id
+having cnt > 1  -- в этом случае используем having
+order by cnt desc
++-----+---------+
+| cnt | user_id |
++-----+---------+
+|  10 |       8 |
+|  10 |       9 |
+|  10 |      10 |
+|  10 |       1 |
+|  10 |       2 |
+|  10 |       3 |
+|  10 |       4 |
+|  10 |       5 |
+|  10 |       6 |
+|  10 |       7 |
++-----+---------+
+
+-- найдём подтверждённых друзей пользователя 1
+select * from friend_requests fr 
+where (initiator_user_id = 1 or target_user_id = 1) and status = 'approved';
+
+-- теперь найдём новости наших друзей
+select * from media
+where user_id in (1,2,3,4,45,68,564) 
+-- нужно увидеть медиа записи списка наших друзей
+
+-- теперь попробуем составить запрос на извлечение новостной ленты:
+select * from media 
+where user_id in (
+select initiator_user_id 
+from friend_requests 
+where target_user_id = 1 and status = 'approved'
+union 
+select target_user_id 
+from friend_requests 
+where initiator_user_id = 1 and status = 'approved'
+) or user_id = 1 -- мои новости в ленту
+order by created_at desc;
+/*Запрашиваем записи из media, которые относятся к друзьям 1 пользователя
+друзья вычисляются двумя запросами. Ну и сортировка по датам.
+ */
+ 
+-- Подсчитываем лайки для моих новостей (моих медиа)
+SELECT 
+	media_id
+	, COUNT(*) -- применим агрегирующую функцию count 
+FROM likes 
+WHERE media_id IN ( -- 1,2,3,4,5
+  SELECT id FROM media WHERE user_id = 1 -- мои медиа
+)
+GROUP BY media_id; -- схлапываем все записи с каждым media_id в 1 запись и подсчитываем их количество
+
+/*
+-- то же с JOIN
+SELECT media_id, COUNT(*) 
+FROM likes l
+JOIN media m on l.media_id = m.id
+WHERE m.user_id = 1 -- мои медиа
+GROUP BY media_id;
+*/
+
+---  Сообщения  ---
+-- Выбираем сообщения от пользователя и к пользователю (мои и ко мне)
+SELECT * FROM messages
+  WHERE from_user_id = 1 -- от меня (я отправитель)
+    OR to_user_id = 1 -- ко мне (я получатель)
+  ORDER BY created_at DESC; -- упорядочим по дате
+  
+-- Непрочитанные сообщения
+-- добавим колонку is_read DEFAULT FALSE
+ALTER TABLE messages
+ADD COLUMN is_read BOOL default false;
+
+-- получим непрочитанные (будут все) 
+SELECT * FROM messages
+  WHERE to_user_id = 1
+    AND is_read = 0
+  ORDER BY created_at DESC;
+
+ -- отметим прочитанными некоторые (старше какой-то даты)
+ -- эмулируем ситуацию, что пользователь заходил в сеть 100 дней назад
+ update messages
+ set is_read = 1
+ where created_at < DATE_SUB(NOW(), INTERVAL 100 DAY);
+
+ -- снова получим непрочитанные
+ SELECT * FROM messages
+  WHERE to_user_id = 1
+    AND is_read = 0
+  ORDER BY created_at DESC;
+ 
+
+ 
+-- Выводим друзей пользователя с преобразованием пола и возраста 
+-- (поиграемся со встроенными функциями MYSQL)
+SELECT user_id, 
+	-- , gender -- сначала выведем так, потом заменим на CASE ниже 
+    CASE (gender)
+         WHEN 'm' THEN 'male'
+         WHEN 'f' THEN 'female'
+    END AS gender, 
+    TIMESTAMPDIFF(YEAR, birthday, NOW()) AS age -- функция определяет разницу между датами в выбранных единицах (YEAR)
+  FROM profiles
+  WHERE user_id IN ( -- 1,2,3 union 4,5,6 -- это мы уже делали сегодня раньше (получали подтвержденных друзей пользователя)
+	  SELECT initiator_user_id FROM friend_requests WHERE (target_user_id = 1) AND status='approved' -- ИД друзей, заявку которых я подтвердил
+	  union
+	  SELECT target_user_id FROM friend_requests WHERE (initiator_user_id = 1) AND status='approved' -- ИД друзей, подрвердивших мою заявку
+  );
+
+-- Является ли пользователь админом данного сообщества?
+-- добавляем поле admin_user_id в таблицу communities
+ALTER TABLE vk.communities ADD admin_user_id INT DEFAULT 1 NOT NULL;
+-- ALTER TABLE vk.communities ADD CONSTRAINT communities_fk FOREIGN KEY (admin_user_id) REFERENCES vk.users(id);
+
+-- установим пользователя с id = 1 в качестве админа ко всем сообществам
+update communities
+set admin_user_id = 1;
+
+-- является ли пользователь админом группы?
+-- user_id = 1
+-- community_id = 5
+select 2 = (
+	select admin_user_id
+	from communities
+	where id = 5
+	) as 'is admin';
 
 _________________________________________________________________________________________
 
+----------------------------------------------
 ----------------------------------------------
 --Важное объявление!
 --Полезные ссылки:
