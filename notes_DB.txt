@@ -66,6 +66,8 @@ ________________________________________________________________________________
 
 ---< Календарные функции >---
 
+-- Документация #Календарные функции
+-- https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_monthname
 
 -- #Отображение языка календарных значений. #Язык временных функций
 -- https://dev.mysql.com/doc/refman/8.0/en/locale-support.html 
