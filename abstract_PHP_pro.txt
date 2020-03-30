@@ -1,0 +1,893 @@
+Урок 1. ООП в PHP. Базовые понятия ------------------------------------------------------
+Важное объявление!
+Здравствуйте, дорогие ученики! Мы начинаем обучение на втором курсе по языку PHP. Расписание занятий вы видите на этой странице - пожалуйста, не опаздывайте на уроки. Если все-таки опоздали - после урока будут доступны видеозаписи.
+Надеюсь этот курс перевернет ваше представление о функциональном программировании, ООП предназначен для создания сложных систем, постараюсь рассказать простым языком.
+Из книг пока рекомендую Котеров Д.: PHP 7 и Мэтт Зандстра PHP объекты шаблоны и методики программирования.
+
+Коментарий преподавателя по выполненному ДЗ:
+
+
+
+Классы, оъекты.
+<?php
+class Article { //Создаём класс.
+	public $id; //"Публичные" переменные в классе
+	public $title;
+	public $content;
+	public function show() { //Метод класса
+		echo "<h1>$this->title</h1>"; //переменная title текущего экземпляра (объекта);
+		echo "<p>{$this->content}</p>"; // Скобками {} лучше экранировать переменные.
+	}
+};
+
+$article1 = new Article;
+$article1->id = 1; //Присваиваем переменной id значение 1 в экземпляре класса
+$article1->title = 'Title of article';
+$article1->content = 'Text';
+$article1->show(); //Вызов метода.
+
+$article2 = new Article; //Второй экземпляр с другими данными
+$article2->id = 2;
+$article2->title = 'Title of article2';
+$article2->content = "Another Text";
+$article2->show(); //Вызов метода.
+
+var_dump($article1);
+var_dump($article2);
+?>
+
+<?php //Статичные переменные и функции
+class Article {
+	const PI = 3.14;
+	public static $count = 0; // static переменная принадлежит классу, а не экземпляру.
+    public static function countUp() { // как и функция
+      self::$count++; // Вызов статичных переменных.
+    }
+    public function show() {
+      self::countUp(); // Вызов статичной функции.
+      echo "Создано экземпляров" . self::$count;
+	  echo "Вызываем константу = "  . self::PI; //Вызов константы
+};
+$article1 = new Article;
+$article1::countUp(); //Внешний вызов статичной функции
+$article1::$count++; //Внешний вызов статичной переменной
+$article1->show();
+?>
+<?php //Конструктор
+class Article { 
+	public $id; 
+	public $title;
+	public $content;
+    //Функция передачи параметров экземпляру посредством функции
+    public function init($id, $title, $content = '') {
+      $this->id = $id; 
+      $this->title = $title;
+      $this->content = $content;
+    }
+	public function show() { 
+		echo "<h1>$this->title</h1>"; 
+		echo "<p>{$this->content}</p>"; 
+	}
+};
+$article1 = new Article;
+//Передаём параметрами значения переменных.
+$article1->init(1, 'Title', 'Text of article');
+$article1->show();
+
+//----------------------------------------------------
+//Теперь используем встроенный контруктор класса
+class Article { 
+	public $id; 
+	public $title;
+	public $content;
+    //Зарезервированная функция конструктор.
+    public function __construct($id = null, $title = '', $content = '') {
+      $this->id = $id; 
+      $this->title = $title;
+      $this->content = $content;
+    }
+	public function show() { 
+		echo "<h1>$this->title</h1>"; 
+		echo "<p>{$this->content}</p>"; 
+	}
+};
+//Передаём параметрами значения переменных уже при создании экземпляра
+$article1 = new Article(1, 'Title', 'Text of article');
+$article1->show();
+
+// C версии PHP 7.1 можно не создавать экземпляра.(временный экземпляр)
+(new Article(2, 'Title 2', 'Text of article 2'))->show();
+
+//Другие зарезервированные функции классов:
+__wakeup(){}
+__clone(){}
+__toString(){}
+__call(){}
+__debugInfo(){}
+__destruct(){}
+__get(){}
+__invoke(){}
+__isset(){}
+__set(){}
+__sleep(){}
+__unset(){}
+
+
+$article2 = $article1;// $article2 становится ссылкой на первый экземпляр.
+$article2 = clone $article1;// $article2 новый экземпляр, клон $article1.
+
+//----------------------------------------------------
+//Наследование классом свойства класса родителя
+class News extends Article {//Создаём новый класс News с наследованием свойств Article
+  public $data;
+  public function getDate() {
+    echo "<p>Date:{$this->data}</p>";
+  }
+}
+
+$news = new News;
+$news->data = date('D, d M Y H:i:s');
+$news->show();//Используется метод из класса родителя
+$news->getDate();
+?>
+
+<?php // Наследование свойств класса родителя
+class Article { //Родительский класс
+	public $id; 
+	public $title;
+	public $content;
+    public function __construct($id = null, $title = '', $content = '') {
+      $this->id = $id; 
+      $this->title = $title;
+      $this->content = $content;
+    }
+	public function show() { 
+		echo "<h1>$this->title</h1>"; 
+		echo "<p>{$this->content}</p>"; 
+    }
+};
+//Передаём параметрами значения переменных уже при создании экземпляра
+$article1 = new Article(1, 'Title', 'Text of article');
+$article1->show();
+
+class News extends Article {//Новый класс наследует свойства родителя.
+      public $data; //Добавляем свои переменные
+	  // Конструктор экземпляра
+      public function __construct($id = null, $title = null, $content = null, $dateParam = null) {
+        //Инициализируем конструктор родителя. Добавляем свойства родителя.
+        parent::__construct($id = null, $title = '', $content = '');
+        $this->data = date($dateParam);// Данные экземпляра
+		}
+      public function getDate() {
+        parent::show();//Запускаем метод родителя...
+        echo "<p>Date:{$this->data}</p>";//...и добавим от экземпляра
+      }
+}
+$news = new News(1, 'Daily News', 'Happy new year!','D, d M Y H:i:s');
+$news->getDate();//Запускает метода show родителя внутри метода getDate.
+
+//Полиморфизм. Пример.
+//Одна функция может выполнять методы разных классов
+function displayArticle($article) {
+	$article->show();
+}
+displayArticle($article1);
+displayArticle($news);
+
+
+?>
+<?php //Шаблон движка
+class Page {
+    protected $template;
+    protected $params;
+
+    public function __construct($template = "main", $params = [])
+    {
+        $this->template = $template;
+        $this->params = $params;
+    }
+
+    public function render() {
+        ob_start(); //Включение буферизации вывода
+        extract($this->params);
+        include $this->template . ".php";
+        return ob_get_clean(); //Получить содержимое текущего буфера и удалить его
+    }
+}
+
+
+$params = [
+    "menu" => (new Page("menu"))->render(),
+    "content" => "Каталог"
+];
+
+$page = new Page("main", $params);
+echo $page->render();
+?>
+
+Домашнее задание:
+ 
+1. Придумать класс, который описывает любую сущность из предметной области интернет-магазинов: продукт, ценник, посылка и т.п. или любой другой области.
+(Товар, корзина, Транспорт, Человек)
+2. Описать свойства класса из п.1 (состояние).
+3. Описать поведение класса из п.1 (методы).
+Приведите пример использования, создайе экземпляр и вызовите методы.
+4. Придумать наследников класса из п.1. Чем они будут отличаться? Привести пример, создать экземпляры классов и вызвать их методы для примера.
+5. Дан код:
+<?php
+class A {
+    public function foo() {
+        static $x = 0;
+        echo ++$x;
+    }
+}
+$a1 = new A();
+$a2 = new A();
+$a1->foo();
+$a2->foo();
+$a1->foo();
+$a2->foo();
+//Что он выведет на каждом шаге? Почему?
+?>
+6. Немного изменим п.5:
+<?php
+class A {
+    public function foo() {
+        static $x = 0;
+        echo ++$x;
+    }
+}
+class B extends A {
+}
+$a1 = new A();
+$b1 = new B();
+$a1->foo(); 
+$b1->foo(); 
+$a1->foo(); 
+$b1->foo();
+//Объясните результаты в этом случае.
+?> 
+7. *Дан код:
+<?php
+class A {
+    public function foo() {
+        static $x = 0;
+        echo ++$x;
+    }
+}
+class B extends A {
+}
+$a1 = new A;
+$b1 = new B;
+$a1->foo(); 
+$b1->foo(); 
+$a1->foo(); 
+$b1->foo(); 
+//Что он выведет на каждом шаге? Почему?
+?>
+Урок 2. ООП в PHP. Расширенное изучение -------------------------------------------------
+--Важное объявление!
+Разъясняю вариант решения домашнего задание от 2го урока.
+Нужно сделать абстрактный класс продукт, задайте константу или свойство - % прибыли заложенный в стоимость товара и методы подсчета общей стоимости и прибыли от продажи.
+Создайте классы наследники для 3х видов товара реализующие этот абстрактный класс. Сделайте цифровой товар со стоимостью 100 и свойством дополнительным количеством товара. Подсчет прибыли считайте как произведение количества на цену и % прибыли. Общую стоимость просто уж сами осилите?
+Также сделайте штучный товар, его цена должна быть в 2 раза больше цифрового, и товар на вес, со свойством дополнительным вес, стоимость соотв. нужно умножать на вес для стоимости и для прибыли еще на % прибыли.
+Реализуйте механизм наследования, подумайте что от кого наследуется, может оптимальнее что придумаете, все ли должны быть наследниками базового класса, и реализуйте для каждого 2 метода подсчета стоимости, и геттеры сеттеры, конструктор конечно.
+Сделайте пример подсчета.
+
+--Полезные ссылки: 
+Документация ООП: https://www.php.net/manual/ru/language.oop5.php
+
+--Домашнее задание.
+1. Переписать автозагрузчик. Добавить пространство имен всем классам.
+2. Расширить проект, добавив свои модели (корзины, заказов).
+3* (Если были замечания по 1 заданию и для закрепления). Создать структуру классов ведения товарной номенклатуры.
+а) Есть абстрактный товар.
+б) Есть цифровой товар, штучный физический товар и товар на вес.
+в) У каждого есть метод подсчета финальной стоимости.
+г) У цифрового товара стоимость постоянная – дешевле штучного товара в два раза. У штучного товара обычная стоимость, у весового – в зависимости от продаваемого количества в килограммах. У всех формируется в конечном итоге доход с продаж.
+д) Что можно вынести в абстрактный класс, наследование?
+
+--Коментарий преподавателя по выполненному ДЗ:
+Можно было и одним str_replace обойтись, он умеет работать и по массиву, ваш алгоритм верный в автозагрузке.
+
+Не нужно пока в моделях внедрять какую либо логику, типа addInCart или __construct($user) в модели корзины, пока модель чисто "зеркало" таблицы в БД, и нам нужно сделать Crud для записей без привязки к назначению модели. У нас несколько по другому будет все.
+
+Чтобы class Cart заработал с таблицей cart нужно еще указать имя таблицы, у вас продукт public $tableName = 'products'; также надо было и для корзины, и мы вообще к методу уже перешли, возвращающему имя таблицы, его вы не сделали. В общем Cart класс не правильно.
+
+abstract class Model implements IModel прекрасно все подключается, вы видимо выше забыли написать use app\interfaces\IModel;
+ведь интерфейс в другом пространстве имен, и в этом классе не виден.
+
+Не надо в getAll() echo "br" подчистите этот тестовый вывод.
+
+С new Db() не решили проблему, создаете кучу экземпляров одного и того же класса.
+
+Надо в интерфейс добавить метод getTableName, чтобы не забыть реализовать его в модели!
+
+Автозагрузка отлично, модели хорошо.
+
+Разбор от ГБ
+https://www.youtube.com/watch?v=WpdnRkPtnlg&feature=youtu.be
+
+
+<?php //По домашней работе
+class Test {
+	protected $x; //Защищённые переменные класса
+	protected $y;
+	
+	//Создадим функцию доступа к защищённым переменным внутри класса
+	public function __set($name, $value) { //Сеттер
+		__log($name, $value); //Можно залогировать действия 
+		if ($name == 'x') {} //Можно проверить валидность
+		$this->$name = $value;
+		//Работает для защищённых (protected) переменных.
+	}
+	
+	public function __get($name) { //Геттер
+		return $this->$name;
+	}
+}
+
+$test = new Test();
+$test->x = 1; //Обращаемся так, как будто переменная public
+$test->y = 2; //thtp __set
+var_dump($test->y); //Через __get
+?>
+Создаём структуру папок
+-engine/
+--Autoload.php
+-models/
+--Products.php
+-public/
+--img/
+--css/
+--js/
+--index.php
+
+Подключение классов в файлах.
+<?php //-models/Products.php
+//Пространство имён
+namespace app\models; //Создаётся виртуальная папка model для нижестоящих классов.
+use app\engine\Db; //Указываем адрес, т.к. Db в другой папке. 
+
+class Product {
+	public $id;
+	public $name;
+	public $description;
+	public $price;
+	public function __construct($id, $name, $description, $price) {
+    (new Db());
+    $this->id = $id;
+	$this->name = $name;
+	$this->description; = $description; 
+	$this->price = $price;
+}
+}
+?>
+<?php //-public/index.php
+//include "../models/Products.php";//Вариант ручного подключения но лучше...
+
+//Функция автоподключения классов
+//перенесли в -engine/Autoload.php
+include "../engine/Autoload.php";
+function __autoload($className) { //если автозагрузка нужна один раз
+	(new Autoload())->loadClass($className);
+	//Временный экземпляр класса и запускаем функцию loadClass
+}
+//Если автозагрузка нужна несколько раз, тогда:
+function loader($className) {
+  // ...  
+};
+spl_autoload_register(loader);
+spl_autoload_register(loader2);//возможность повторного использования
+//spl_autoload_register — Регистрирует заданную функцию в качестве реализации метода __autoload()
+
+//Создаём псевдонимы для краткого описания простарнства имён
+use app\models\Products as Products; //Псевдоним класса. Заменяет полный путь на короткий.
+use app\models\Users; //as Users можно опускать если имя одинаковое. 
+use app\engine\{Autoload, Db};//Если файлов в папке много, можно так.
+
+//Можно всё ещё упростить:
+spl_autoload_register([new Autoload(), 'loadClass']);
+
+$product = new models\Products();//Виртуальный путь в глобальном пространстве имён (слеш обратный!!!)
+$user = new Users();//Используем псевдонимы
+$db = new Db();
+?>
+<?php //-engine/Autoload.php
+//Простейший вариант использования
+function __autoload($className); {
+	include "../models/{$className}.php";
+}
+//Но лучше создать класс
+class Autoload { //Автоподключение файлов
+    private $path = [ //Массив со списком путей.
+      'models',
+      'engine'
+    ];
+	public function loadClass($className) {
+		$className = str_replace('\\', '/', $className);//Разворачиваем слеши
+        $className = str_replace('app/', '', $className);//Убираем app/ из пути.
+		foreach ($this->path as $path) { //Перечисляем пути
+			$fileName = "../{$path}/{$className}.php"; //формируем путь к файлу
+			if (file_exists($fileName)) { //Если данный файл существует...
+			include $fileName; //...подключаем его...
+			break;// ... и выходим из цикла.
+			}
+		}
+	}
+}
+?>
+
+Создаём родительский класс с общими методами
+<?php//-public/index.php
+//.....
+
+//Создаём экземпляры классов, передавая в качестве параметра экземпляр Db
+$product = new Products(new Db());
+$user = new Users(new Db());
+
+echo $user->getOne(5);//SELECT * FROM users WHERE id = 5
+echo $product->getAll();//SELECT * FROM products
+//Вызвались методы, унаследованные от общего родителя Model
+?>
+<?php//-public/models/Model.php
+namespace app\models;
+use app\engine\Db;
+
+//Абстрактный класс. Нельзя (и не нужно) создавать экземпляры абстрактных классов. Он нужен лишь для наследования свойств и методов потомками класса.
+abstract class Model {
+  public $tableName = '';
+  protected $db;
+    
+    public function __construct(Db $db) {//Параметр - объект, экземпляр класса Db
+      $this->db = $db;
+	}
+    public function getOne($id) {//Запрос на получение одной записи из таблицы БД
+      $sql = "SELECT * FROM {$this->tableName} WHERE id = {$id}";
+      return $this->db->queryOne($sql);
+    }
+    public function getAll() {//Запрос на получение всей таблицы из БД
+      $sql = "SELECT * FROM {$this->tableName}";
+      return $this->db->queryAll($sql);
+    }
+}
+?>
+<?php //-models/Products.php
+namespace app\models; 
+use app\engine\Db;
+
+class Products extends Model {
+	public $id;
+	public $name;
+	public $description; 
+	public $price;
+    public $tableName = 'products';
+}// Файл Users.php подобный
+?>
+
+Абстрактные методы
+<?php//-public/models/Model.php
+//...
+    public function getAll() {//Запрос на получение всей таблицы из БД
+      $sql = "SELECT * FROM {$this->getTableName()}";
+	  //{$this->tableName} заменили на результат абстрактной функции
+      return $this->db->queryAll($sql);
+    }
+	abstract public function getTableName();
+	//Внедрили абстрактную функцию. Если теперь забыть реализовать её в дочернем экземпляре, то getAll() выдаст ошибку.
+}
+?>
+<?php //-models/Products.php
+//...
+class Products extends Model {
+	//...
+    //public $tableName = 'products';
+	//Реализуем через функцию, заданную абстрактно в родителе.
+	public function getTableName() {
+		return 'products';
+	}
+}
+?>
+
+Интерфейсы
+<?php
+//Если необходимо прописать все свойства и методы, которые необходимо реализовать в классе, то создаётся интерфейс.
+interface IModel {
+  public function getOne($id);
+  public function getAll();
+  public function getTableName();
+}
+//Класс Model реализует интерфейс IModel
+abstract class Model implements IModel, IDb, ILog {
+  //...
+}
+?>
+
+
+
+<?php?>
+<?php?>
+
+Урок 3. Шаблонизаторы (обращение к базам данных)-----------------------------------------
+--Полезные ссылки:
+Вебинар:
+https://www.youtube.com/watch?v=Mban-6Yrbl4&feature=youtu.be
+Статья PDO http://phpfaq.ru/pdo
+Статья PDO https://habr.com/ru/post/137664/
+
+--Домашнее задание:
+1. Создать архитектуру БД для магазина, продукты, клиенты, заказы, категории (создать таблицы и связи)
+2. Сделать модели для таблиц.
+3. Изучить документацию по PDO.
+4. В моделях добавить CRUD-блок для операций с БД. *Update как успеете
+Пример как должно работать:
+$product = new Product("Пицца","Описание", 125); стоимость и т.д.
+$product->insert(); добавим этот продукт в БД (ВАЖНОЕ!)
+$product->delete(); удалим его из БД
+Обратите внимание, в методах нет id или еще чего-либо, мыслим как объект.
+
+*Сделать так, чтобы getOne возвращал не ассоциативный массив, а объект с заполненными соответствующими свойствами из БД.
+
+--Коментарий преподавателя по выполненному ДЗ:
+
+Взаимодействие с базами данных
+<?php //-models/index.php
+include realpath("../config/config.php");
+include realpath("../engine/Autoload.php");
+
+use app\models\{Products, Users, Basket};
+use app\engine\{Autoload, Db};
+
+spl_autoload_register([new Autoload(), 'loadClass']);
+
+$product = new Products("Кофе", "Крепкий", 12);
+$product->insert();
+//$product->delete();
+//var_dump($product);
+
+var_dump($product->getOne(1));
+
+//var_dump($product->getAll());
+
+//echo $product->getAll();
+?>
+
+<?php //-config/config.php
+define('DS', DIRECTORY_SEPARATOR); //Предопределённая константа-разделитель пути файла"/"
+//define("ROOT_DIR", $_SERVER['DOCUMENT_ROOT'] . "/../"); //Присваиваем абсолютный путь
+define("ROOT_DIR", dirname(__DIR__)); 
+//dirname — Возвращает имя родительского каталога из указанного пути
+?>
+
+<?php//-engine/Autoload.php
+namespace app\engine;
+
+class Autoload
+{
+    public function loadClass($className)
+    {
+        // $fileName = (str_replace(['app', '\\'], [ROOT_DIR, DS], $className) . ".php");
+        $fileName = realpath(str_replace(['app', '\\'], ['..', DS], $className) . ".php");
+        if (file_exists($fileName)) {
+            include $fileName;
+        }
+    }
+}
+?>
+<?php //-engine/Db.php
+namespace app\engine;
+use app\traits\Tsingletone;
+
+class Db
+{
+    private $config = [ //Конфигурация для подключения к базе данных
+        'driver' => 'mysql',
+        'host' => 'localhost',
+        'login' => 'root',
+        'password' => '',
+        'database' => 'shop',
+        'charset' => 'utf8'
+    ];
+	
+	//private function __construct() {}
+	//В этом случае невозможно создать экземпляр способом new Db()
+
+    use Tsingletone; //include файл -traits\Tsingletone.php
+
+    private $connection = null; //Соединение
+
+    private function getConnection() { //Метод, осуществляющий подключение
+        if (is_null($this->connection)) {
+            var_dump("Подключаюсь К БД");
+			//Встроенный класс для подключения к БД
+            $this->connection = new \PDO( //Опратный слеш для выхода в корень пространства имён, что-бы найти данный класс.
+                $this->prepareDSNString(),
+                $this->config['login'],
+                $this->config['password']
+            );
+            $this->connection->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+			//Выбираем метод получившегося объекта connection и устанавливаем параметры вывода данных в ассоциативный массив.
+        }
+        return $this->connection;//Возвращаем экземпляр PDO соединения
+    }
+    private function prepareDSNString() {//Подготовка строки для конструктора PDO
+        return sprintf("%s:host=%s;dbname=%s;charset=%s",//Форматируемый вывод
+            $this->config['driver'],
+            $this->config['host'],
+            $this->config['database'],
+            $this->config['charset']
+        );
+    }
+//"SELECT * FROM products WHERE id = :id;", ["id" => 1] //Placeholder :id
+    private function query($sql, $params){ //Обёртка запроса
+        $pdoStatement = $this->getConnection()->prepare($sql);//Подготовка строки
+        $pdoStatement->execute($params);//выполняем запрос с параметрами...
+		//где $params - массив со списком  значений placeholder-ов
+        return $pdoStatement;//... и получаем объект
+    }
+
+    private function execute($sql, $params) {//Дополнительный (внутренний) метод
+        $this->query($sql, $params);
+        return true; //пока true
+    }
+
+    public function queryOne($sql, $params = []) {
+        return $this->queryAll($sql, $params)[0];//Первый элемент 
+    }
+
+    public function queryAll($sql, $params = []) {
+        return $this->query($sql, $params)->fetchAll();
+    }
+
+    public function __toString()//Позволяет вывести экземпляр класса с помощью echo
+    {
+        return "Db";
+    }
+}
+?>
+<?php//-models/Basket.php
+namespace app\models;
+
+
+class Basket extends Model 
+{
+    public $id; //Поля должны соответствовать названием столбцов таблицы БД 
+    public $session_id;
+    public $goods_id;
+
+    public function getTableName()
+    {
+        return "basket";
+    }
+}
+?>
+<?php//-models/Model.php
+namespace app\models;
+use app\engine\Db;
+use app\interfaces\IModel;
+
+abstract class Model implements IModel
+{
+    protected $db;
+
+    public function __construct()
+    {
+        $this->db = Db::getInstance();//Создаём экземпляр Db
+    }
+	
+    public function getOne($id)
+    {
+        $sql = "SELECT * FROM {$this->getTableName()} WHERE id = :id";
+        return $this->db->queryOne($sql, ['id' => $id]);
+    }
+
+    public function getAll()
+    {
+        $sql = "SELECT * FROM {$this->getTableName()}";
+        return $this->db->queryAll($sql);
+    }
+
+    public function insert() {
+        foreach ($this as $key=>$value) {
+            //TODO исключить id и db при формировании строки запроса
+            echo $key . " " . $value . "<br>";
+        }
+        //TODO собрать валидный запрос к БД по $key и $value и выполнить его
+        $sql = "INSERT INTO `{$this->getTableName()}`() VALUES ()";
+        var_dump($sql);
+        //TODO и в поле id сохранить новый id (lastInsertId) $this->id = lastinsertId
+    }
+
+    abstract public function getTableName();
+}
+?>
+<?php //-models/Products.php
+namespace app\models;
+
+class Products extends Model {
+    public $id;
+    public $name;
+    public $description;
+    public $price;
+
+    public function __construct($name = null, $description = null, $price = null)
+    {
+        parent::__construct();//Вызываем родительский конструктор
+        $this->name = $name;
+        $this->description = $description;
+        $this->price = $price;
+    }
+
+    public function getTableName()
+    {
+        return "products";
+    }
+}
+?>
+
+<?php //-traits\Tsingletone.php
+namespace app\traits;
+
+//trait - Особенность
+//Трейт - это механизм обеспечения повторного использования кода в языках с поддержкой только одиночного наследования
+trait Tsingletone
+{
+    private function __construct()  {}
+    private function __clone()  {}
+    private function __wakeup()  {}
+	//В этих случаях невозможно создать экземпляр способом new Db()
+
+    //Чтобы избавиться от повторения создания класса:
+    private static $instance = null; //Показатель существования экземпляра DB
+
+    public static function getInstance() {
+        if (is_null(static::$instance)) {//Определяем, есть ли уже экземпляр Db
+            static::$instance = new static();//Статически создаём свой экземпляр
+        }
+        return static::$instance;
+    }
+}
+?>
+<?php?>
+<?php?>
+
+
+
+
+
+Урок 4.Углубленное проектирование реляционных БД-----------------------------------------
+--Важное объявление!
+
+--Полезные ссылки: 
+Магические методы:
+https://habr.com/ru/post/228951/
+Запись трансляции:
+https://www.youtube.com/watch?v=U-2xhT2SlxA&feature=youtu.be 
+
+--Домашнее задание.
+1. Реализовать модель MVC в своем проекте, сделать контроллер продукта как в лекции, реализовать отображение каталога и карточки товара.
+2. Сделать еще один любой контроллер (корзина, отзывы и т.п.)
+3. Доделать CRUD для модели. Подумать как в update обновлять только поля, которые изменились. Как фильтровать не нужные поля, подумать как бы корректно создавать объект без статики.
+* В каталоге выводить не все товары сразу, а скажем по 10 штук, и сделать кнопочку "еще", отображающие уже 20 товаров и т.д.
+--- (1:03)Сделать update(); Желательно обновлять данные только изменившегося поля. Применить массив с полями, изменившемеся. private , __set
+
+--Коментарий преподавателя по выполненному ДЗ:
+Что-то у вас 2 дампа, какой из них нужен то?
+
+Не вижу еще одного контроллера, для еще странички, корзины например, мне надо видеть что вы поняли как строить сраницы через контроллер передавая там в шаблон данные.
+
+actionBasket и actionBasketAdd лучше сделать в отдельном BasketController и не мешать с продуктом, хотя казалось бы связь есть, зачем, разделите, легче будет.
+
+А что за проблема с созданием id? У нас id должно устанавливаться при getOne из БД, и через lastInsertId при update, при new там будет null.
+
+В массиве props храните и значения, по сути дублируя данные, они же у вас и так в public полях, я предагал пока там только флаг изменения состояния хранить, а так запутаетесь иметь 2 набора данных, и не оптимально это. Да так можно хранить значения в массиве, даже лучше, но тогда от public полей вообще можно избавиться. Не старайтесь сразу сложно и все сделать, по шагам все по маленьку.
+А у вас там даже третий набор формируется в propsChanged, не надо! Храните в одном месте данные, а не в трех)
+
+insert переделали на props, вот это правильно. В целом вижу ориентируетесь, но много взяли за раз, упростите себе задачу, потренируйтесь на попроще ситуации - массив props с флагами true-false и закрытые поля с магическими сеттерами-геттерами.
+
+<?php
+//Вставка PHP DOC 
+/**
+* @var Db
+*/
+//Помогает найти PHPStorm класс Db в дереве проекта.
+
+var_dump(get_class_methods($product));//Позволяет вывести методы класса
+?>
+
+Favicon (сокр. от англ. FAVorite ICON — «значок для избранного») — значок веб-сайта или веб-страницы. Отображается браузером во вкладке перед названием страницы, а также в качестве картинки рядом с закладкой... (favicon.ico)
+Добавили иконку в папку public, что-бы браузер повторно не загружал index.php
+<?php?><?php?><?php?><?php?><?php?><?php?><?php?><?php?>
+
+Урок 5. Парадигма MVC. Обновления движка.------------------------------------------------
+--Важное объявление!
+
+--Полезные ссылки: 
+Запись трансляции:
+https://www.youtube.com/watch?v=pSJ6EMfzoUw&feature=youtu.be
+
+Установка composer на openserver:
+http://nikolaev-web.ru/blog/installing_the_composer_on_openServer/
+
+Packagist
+https://packagist.org/
+
+SOLID 1 https://itnan.ru/post.php?c=1&p=412699
+
+SOLID 2 https://ru.stackoverflow.com/questions/900455/%D0%9F%D1%80%D0%B8%D0%BD%D1%86%D0%B8%D0%BF%D1%8B-solid-%D0%B4%D0%BE%D1%81%D1%82%D1%83%D0%BF%D0%BD%D1%8B%D0%BC-%D1%8F%D0%B7%D1%8B%D0%BA%D0%BE%D0%BC-%D0%BD%D0%B0-%D0%9F%D0%A0%D0%9E%D0%A1%D0%A2%D0%AB%D0%A5-%D0%BF%D1%80%D0%B8%D0%BC%D0%B5%D1%80%D0%B0%D1%85-%D0%BA%D0%BE%D0%B4%D0%B0-%D0%A1
+
+Принципы SOLID для тех кто служил
+https://pikabu.ru/story/solid_army_7082439
+
+
+--Домашнее задание.
+1. Разобраться с принципом SOLID, почитать ссылки.
+2. Через composer скачать twig и подключить к проекту. Сделать шаблоны товара и всех товаров на twig. (Методичка 3-го урока) Постарайтесь, чтобы экземпляр Twig было один, а не столько, сколько раз вызывается renderTemplate для построения шаблона.
+3. * Сделать авторизацию пользователя.
+
+
+Необходимо привести URL строку в нормальный вид. С localhost/?c=product&a=catalog на localhost/product/catalog/
+
+Для этого:
+Если сервер Apache, то в файле .htaccess (В public) добавить код:
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} ! -f
+RewriteCond %{REQUEST_FILENAME} ! -d
+RewriteRule . index.php
+
+0:06 - Показан пример домашней работы
+
+0:12 TODO - Сделать цикл по props
+
+0:16 TODO - Добавить props
+
+Как избавиться от static? Нельзя плодить много экземпляров.
+Нужно придумать механизм, чтобы они создавались при первом обращении, используя __set __get. 
+
+
+SOLID
+
+S - Принцип единственной ответственности (Single Responsibility Principle)
+O - Принцип открытости/закрытости (Open-closed Principle)
+L - Принцип подстановки Барбары Лисков (Liskov Substitution Principle)
+I - Принцип разделения интерфейса (Interface Segregation Principle)
+D - Принцип инверсии зависимостей (Dependency Inversion Principle)
+
+Урок 6. Практика ------------------------------------------------------------------------
+Запись трансляции:
+https://d2xzmw6cctk25h.cloudfront.net/record/51760/attachment/c2584194c445aa69d557e3dacff5ed63.mp4
+
+--Полезные ссылки:
+Обработка ошибок в асинхронных функциях
+https://bespoyasov.ru/blog/error-handling-async-await/
+
+--Домашнее задание.
+1. Разобраться с доработками движка. crud должен быть готов.
+2. Товар должен помещаться и удаляться (ВАЖНОЕ) из корзины асинхронно.
+3. Улучшить авторизацию (используя хеш и куки). Переписать авторизацию через Request.
+4* Сделать класс для работы с сессиями Session по аналогии с request
+
+
+0:12 Начало лекции.
+0:49 При удалении из корзины, проверить на совпадение сессии и далее по этому...
+1:17 Можно сделать общий API контроллер для асинхронных запросов
+1:43 По аналогии сделать "удалить" из корзины remove() BasketController
+1:58 Подумать  как не создавать множество экземпляров Request
+2:00 *Сделать класс для работы с сессиями Session по аналогии с request
+2:16 Нужно сделать хэш пароля, и сравнить по нему.
+ 
+ 
+Урок 7. Тестирование. PHPUnit.-----------------------------------------------------------
+Запись трансляции:
+
+--Полезные ссылки:
+Примеры тестов: https://habr.com/ru/post/56289/
+Использование имитирующих объектов: https://klisl.com/phpunit_mock.html
+Зачем нужно тестирование: https://habr.com/ru/company/dataart/blog/342098/
+Теория тестирования: https://phpprofi.ru/blogs/post/24
+
+--Домашнее задание.
+1. Разобраться с принципом работы PHPUnit. Попробовать примеры из методички.
+2. Продолжить работу над корзиной, авторизацией и оформлением заказа, сделать обработку ошибок.
+3. Написать несколько модульных тестов. Например сделайте детальное тестирование сущности продукт.
+4.* Переделать проект под репозитарий.

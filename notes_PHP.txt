@@ -1,0 +1,262 @@
+Вывод
+<?php
+var_dump($variable);
+print_r($variable);
+echo($variable);
+echo "Переменная равна {$variable}";
+echo nl2br('Функция заменяет перенос строки -
+на код разврыва');
+//nl2br — Вставляет HTML-код разрыва строки перед каждым переводом строки
+
+Xdebug — это расширение для PHP (должно быть скомпилировано и установлено в процессе установки PHP) которое представляет разработчику следующий функционал для отладки:
+Трассировки стека, Более приятный вывод var_dump, и т.д.
+
+?>
+
+
+<?php
+sprintf — Возвращает отформатированную строку
+$num = 5;
+$location = 'tree';
+$format = 'There are %d monkeys in the %s';
+echo sprintf($format, $num, $location);
+?>
+Циклы
+<?php
+foreach (array_expression as $value)
+    statement
+foreach (array_expression as $key => $value)
+    statement
+?>
+
+Массивы
+<?php
+//Преобразования массива в строку, implode
+implode ( string $glue , array $pieces ) : string
+//glue По умолчанию равен пустой строке.
+//pieces Массив объединяемых строк.
+//Пример:
+$array = array('имя', 'почта', 'телефон');
+$comma_separated = implode(",", $array); // имя,почта,телефон
+
+foreach (array_expression as $value)
+    statement
+foreach (array_expression as $key => $value)
+    statement
+	
+array_slice($array, 2); //Возвращает массив без первых двух элементов
+
+array_splice($array, $offset) //Удаляет часть массива и заменяет её чем-нибудь ещё
+?>
+
+_________________________________________________________________________________________
+
+Работа с файлами
+<?php
+include 'test.php'; //добавили содержимое файла (вставляется код файла в месте вызова)
+require //Выдаёт ошибку, и завершиет выполнение программы.
+include_once //выводит файл один раз, проверяя подключенные.
+
+$_FILES //-  Переменные файлов, загруженных по HTTP
+?>
+<form action="" method="post" enctype="multipart/form-data">
+    <input type="file" name="file"> Форма для отправки файла
+</form>
+<?php
+var_dump($_FILES);
+/*array ['file' => 
+			array [
+				'name' => 'TEST.txt' 
+				'type' => 'text/plain'  // MIME-тип файла.
+				'tmp_name' => 'W:\userdata\temp\php665F.tmp' //Создаётсяя временный
+				'error' => 0 
+				'size' => 0
+			] //Ошибки: https://www.php.net/manual/ru/features.file-upload.errors.php
+		]
+*/
+move_uploaded_file($_FILES['file']['tmp_name'], "uploaded/{$_FILES['file']['name']}");
+//move_uploaded_file — Перемещает загруженный файл в новое место
+
+?>
+
+
+
+_________________________________________________________________________________________
+
+Базы данных
+<?php
+//Создание подключения
+$conn = mysqli_connect($servername, $username, $password);
+?>
+
+_________________________________________________________________________________________
+
+Интерактивность. Взаимодействие с HTML кодом.--------------------------------------------
+
+<?php//#header 
+header (); header — Отправка HTTP-заголовка
+// !!! Должна распологаться до вывода любого HTML кода! Кодировка utf-8 без BOM
+header('Content-Type: text/html; charset=utf-8');
+//Передаём заголовок с типом контента и кодировкой.
+
+Список MIME-типов: //https://ru.wikipedia.org/wiki/%D0%A1%D0%BF%D0%B8%D1%81%D0%BE%D0%BA_MIME-%D1%82%D0%B8%D0%BF%D0%BE%D0%B2
+
+// Redirect Перенаправление на страницу
+header('Location: /'); // В корневую страницу
+header('Location: login.php'); // Файл на сервере
+header('Location: https://www.yandex.ru/'); // Внешний адрес
+header('refresh: 5; https://www.yandex.ru/'); // Внешний адрес c задержкой в 5 секунд.
+
+// Что-бы код после перенаправления не выполнялся, останавливаем выполнение кода:
+exit; // или 
+die; // или
+
+//Следующий код выводит окно авторизации, с запросом логина и пароля.
+if (!isset($_SERVER['PHP_AUTH_USER'])) {
+    header('WWW-Authenticate: Basic realm="My Realm"');
+    header('HTTP/1.0 401 Unauthorized');
+    echo 'Текст, отправляемый в том случае,
+    если пользователь нажал кнопку Cancel';
+    exit;
+} else {
+    echo "<p>Hello {$_SERVER['PHP_AUTH_USER']}.</p>";
+    echo "<p>Вы ввели пароль {$_SERVER['PHP_AUTH_PW']}.</p>";
+//Конец кода
+
+header_remove()// - Удаляет ранее установленные заголовки
+
+Список кодов состояния HTTP:
+//https://ru.wikipedia.org/wiki/%D0%A1%D0%BF%D0%B8%D1%81%D0%BE%D0%BA_%D0%BA%D0%BE%D0%B4%D0%BE%D0%B2_%D1%81%D0%BE%D1%81%D1%82%D0%BE%D1%8F%D0%BD%D0%B8%D1%8F_HTTP
+
+//Отправляем заголовок с ошибками. Важно для поисковых систем. Что-бы не добавляли в индекс несуществующие страницы.
+header('HTTP/1.0 404 Not Found');//Страница не найдена
+header('HTTP/1.0 304 Not Modified');//Страница не была изменена. Браузер может взять страницу из кеша.
+
+Для скачивания файлов пользователем:
+// Будем передавать PDF
+header('Content-Type: application/pdf');//Список MIME-типов см выше.
+
+// Он будет называться downloaded.pdf
+header('Content-Disposition: attachment; filename="downloaded.pdf"');
+
+// Исходный PDF-файл original.pdf
+readfile('original.pdf');
+?>
+
+
+
+$_GET и $_POST методы передачи данных
+<form action="action.php"><!--Если указан action="action.php", при отправке формы запускается код из указанного файла. В строке locahost/action.php?name=Вася&send=ok -->
+</form>
+
+
+
+<!--#get #post #GET #POST #REQUEST-->
+<form method="get"><!-- Форма c отправкой методом GET 
+					(метод GET по умолчанию, можно не указывать) -->
+    <input name="search" type="text" value="<?=$search?>"> <!-- name="search" переменная в которую запишется содержимое -->
+</form>
+<?php
+$search = $_GET['search']; //search - параметр name элемента.
+?>
+
+<?php
+var_dump($_GET);// ['name' => 'Вася' ,'send' => 'ok']
+?>
+<form action="action.php"><!--Если указан-->
+    <input type="text" name="name"><!--Вводим "Вася"--> 
+    <input type="submit" name="send" value="ok">
+	<!--При отправке страница обновляется и в массив $_GET передаются значения полей формы с ключами - именами 
+	При этом в адресной строке передаётся: localhost/?name=Вася&send=ok    -->
+</form>
+
+
+<?php
+var_dump($_POST);// ['name' => 'Вася' ,'send' => 'ok'] только POST данные
+var_dump($_REQUEST);// ['id' => '3' ,'name' => 'Вася' ,'send' => 'ok']
+//$_REQUEST - aссоциативный массив (array), который по умолчанию содержит данные переменных $_GET, $_POST и $_COOKIE.
+?>
+<form action="/?id=3" method="post">
+<!--Отправка данных методом POST (через action GET id=3)-->
+    <input type="text" name="name"><!--Вводим "Вася"--> 
+    <input type="submit" name="send" value="ok">
+	<!--При этом в адресной строке не передаются отправленные данные    -->
+</form>
+
+<a href="action.php/?id=2&amp;color=red">Посмотреть товар</a>
+<!--Ссылка на страницу товара, с передачей id и цвета товара через GET массив-->
+<!-- &amp; - правильная замена & -->
+
+<?php
+if (empty($_REQUEST) {
+	//Обрабатываем полученные данные ...
+	header ("Location: /");//... и обновляем страницу, для удаления из браузера данных GET или POST запроса.
+}
+?>
+
+<!---->
+
+
+
+Работа с чекбоксами
+<form action="checkbox-form.php" method="post">
+Choose a letter?<br />
+<input type="checkbox" name="formDoor[]" value="A" />A<br />
+<input type="checkbox" name="formDoor[]" value="B" />B<br />
+<input type="checkbox" name="formDoor[]" value="C" />C<br />
+<input type="checkbox" name="formDoor[]" value="D" />D<br />
+<input type="checkbox" name="formDoor[]" value="E" />E
+<!-- Каждый выбранный чекбокс поместит значение в массив $_POST->formDoor[] -->
+<input type="submit" name="formSubmit" value="Submit" /> <!--или...-->
+
+<select name="lang" > <!--Выбор одного пункта-->
+        <option value="en">England</option>  <!--$_POST['lang' => 'en'] -->
+        <option value="ru">Русский</option>
+        <option value="jp">Japanese</option>
+    </select>
+	
+	<select name="lang[]" id="" multiple><!--Выбор нескольких пунктов в массив-->
+        <option value="en">England</option> <!--'lang' => array['0' => 'en']-->
+        <option value="ru">Русский</option> 
+        <option value="jp">Japanese</option>
+		<!--lang => array['0' => 'en', '1' => 'ru'] если два выбрано-->
+    </select>
+
+<button name="formSubmit" value="Send" >Отправить</button>
+</form>
+
+<?php //#$_SERVER
+$_SERVER — Информация о сервере и среде исполнения
+echo $_SERVER[PHP_SELF]; //'/index.php'
+
+PHP_SELF - Имя файла скрипта, который сейчас выполняется, относительно корня документов. 
+SERVER_NAME - Имя хоста, на котором выполняется текущий скрипт.
+QUERY_STRING - Строка запроса, если есть, через которую была открыта страница.
+DOCUMENT_ROOT - Директория корня документов, в которой выполняется текущий скрипт, в точности та, которая указана в конфигурационном файле сервера.
+HTTP_HOST - Содержимое заголовка Host: из текущего запроса, если он есть.
+HTTP_REFERER - Адрес страницы (если есть), с которой браузер пользователя перешёл на эту страницу.
+REMOTE_ADDR - IP-адрес, с которого пользователь просматривает текущую страницу.
+HTTP_USER_AGENT - Содержимое заголовка User-Agent: из текущего запроса, если он есть. Эта строка, обозначающая браузер, который открыл данную страницу.
+...и др.
+?>
+
+_________________________________________________________________________________________
+
+
+
+
+<?php
+header('Location: http://www.example.com/'); //Отправка HTTP-заголовка
+header("Refresh: 0"); //Обновление страницы
+?>
+
+<?php //#$_SESSION
+$_SESSION — Переменные сессии
+session_start() — Стартует новую сессию, либо возобновляет существующую
+session_id — Получает и/или устанавливает идентификатор текущей сессии
+session_name — Получить или установить имя текущей сессии
+session_regenerate_id — Генерирует и обновляет идентификатор текущей сессии
+session_destroy — Уничтожает все данные сессии
+session_unset — Удалить все переменные сессии
+
+?>

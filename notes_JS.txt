@@ -1,0 +1,15 @@
+//Локальное хранилище #localStorage
+
+https://tproger.ru/articles/localstorage/
+
+localStorage.setItem('ключ', 'значение'); 
+	//Метод который добавляет в localStorage новый ключ со значением (а если такой ключ уже существует, то перезаписывает новым значением). Пишем, например, localStorage.setItem(‘myKey’, ‘myValue’);
+
+localStorage.getItem('ключ');
+	//Берем определенное значение из хранилища по ключу.
+	
+localStorage.removeItem("Ключ");
+	//Удаляем ключ
+
+localStorage.clear();
+	//Очищаем все хранилище

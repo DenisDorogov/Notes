@@ -1,0 +1,337 @@
+Урок 1. Знакомство и установка --------------------------------
+
+Пираты силиконовой долины - Фильм
+Just for Fun - книга про создание линукс
+ubuntu.com
+red hat и debian
+аппаратная виртуализиция
+
+NAT --> Сетевой мост
+
+обновление операционной системы
+ls              - просмотреть содержимое каталога
+pwd             - смотреть каталог текущий
+sudo            - утилита для команд суперпользователя
+sudo apt update - обновить список пакетов программ
+sudo -i         - получаем права суперпользователя на постоянную 
+sudo --help     - документация по командам
+man sudo        - справочник команд
+sudo apt upgrade -y - обновление пакетов
+apt -get        - раннее название apt
+aptitude        - более удобная утилита apt
+apt update и distr-upgrade
+ip addr show
+Ctrl+l очиска экрана
+apt install gcc make perl mc openssh-server -y -устанавливаем пакеты
+systamctl status sshd - проверяем ssh
+CentOS
+
+
+ 
+Урок 2. Работа в графическом и консольном режиме ----------------------------------
+
+От преподавателя:
+таблица сигналов процессам https://www.e-reading.club/chapter.php/102908/177/Kostromin_-_Linux_dlya_pol%27zovatelya.html
+Немного о процессах:
+http://www.linuxcenter.ru/lib/articles/system/linux_processes.phtml
+https://habr.com/ru/post/423049/
+дополнительно про потоки ввода вывода и каналы (конвееры) http://xgu.ru/wiki/%D0%A1%D1%82%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D1%82%D0%BD%D1%8B%D0%B5_%D0%BF%D0%BE%D1%82%D0%BE%D0%BA%D0%B8_%D0%B2%D0%B2%D0%BE%D0%B4%D0%B0/%D0%B2%D1%8B%D0%B2%D0%BE%D0%B4%D0%B0
+по зомби процессам нарыл вот такую интересную ссылку https://renotes.ru/post-223/unix-kill-zombie-proccess
+
+
+
+mirror.yandex.ru
+CTRL+ALT+F1
+cd - смена каталога
+pwd - текущий каталог
+ls --help - помощь по команде ls
+ls -l -покажет список с аттрибутами
+ls -a -покажет также скрытыа файлы (-А) без ссылок "." и ".."
+./myprog -запустит программу находящуюся в этом каталоге.
+man ls - мануал подробный
+id - какой пользователь в системе
+touch file- создать файл
+touch img_20{17..19}{01..12}(01..31).jpg -создаёт файлы типа img_YYYYMMDD.ipg
+cat > file2.txt -создание файла с консольного ввода
+
+rm - удаление файла (без подтверждения)
+rm -r -удаление каталога
+rm -rfv -удаление с выводом удалённого
+echo "test" - передать содержимое на экран (можно без кавычек)
+r=1;echo $r - вывод переменной
+echo "test">file - записать в файл
+cat file - просмотреть файл.
+less file - постраничный просмотр
+more - постраничный просмотр файла
+cp file file1 - копирование
+cp -R -рекурсивное копирование каталогам (вместе с подкаталогами)
+mv file1 file2 - переименование (перемещение)
+mv img_201905{01..10} lesson1/backup -переместит файлы с маской в соответствующий каталог.
+
+vi - текстовый редактор (очень неудобный)
+ i - редактирование
+ esc - выход из редактирования
+ x - удалить символ
+ dd - удалить строку
+:q -выйти из Vi. Если не получиться, значит вы каким-то изменили;
+:q! выйти отбросив изменения следует командой.
+:w – записать или сохранить файл;
+:w filename – для сохранение под другим именем;
+:x или :wq – сохранить и выйти.
+х – удаление символа под курсором;
+J – присоединение следующей стоки к текущей;
+r+символ – замена символа на символ;
+dd – удаление текущей стоки.
+
+vim - редактор
+nano - редактор
+ ctrl+o
+mcedit - редактор от mc
+mkdir test - создание каталога
+mkdir test{1..5}
+mkdir -p test/test/test - создание дерева каталогов
+rm -rf test удаление каталога(без вопросов)
+
+Перемещения по командной строке
+•  Ctrl-A — в начало строки. 
+•  Ctrl-E — в конец строки. 
+•  Alt-F — на слово вперед. 
+•  Alt-B — на слово назад. 
+•  Ctrl-U — удалить в строке все символы от текущей позиции до начала строки. 
+•  Ctrl-K — удалить в строке все символы от текущей позиции до конца строки.
+•  Ctrl-S остановит вывод на терминал.
+•  Ctrl-Q продолжает вывод после Ctrl-S.
+•  Ctrl-C завершает работу текущей программы.
+•  Ctrl-R — для поиска по истории команд.
+
+Цикл по перемещению файлов по каталогам:
+for i in {2017..2019}
+> do
+> for j in {01..05}
+> mv img_$i$j* $i/$j -перемещает файлы типа img_YYYYMMNN.jpg в подкаталоги
+> done
+> done
+
+cp test
+cp -r
+mv test - переименовывает и каталог
+cd ~ - возвращаемся
+mv test test1
+
+apropos password -ищет утититы по ключевому слову (в данном случае связанные с аролями)
+grep -ищет по заданной строке в выводе от предыдущей программы.
+apropos password |grep change -фильтруем выборку по слову change
+
+
+ps aux |less - процессы перечень. Вывод с помощью less
+ps -ef |less
+ps -T -p 3083 -конкретный процесс с определенным PID
+top - аналог диспетчера задач
+htop - еще аналог диспетчера задач(не предустановлен)
+
+
+kill - убить процесс
+pkill - убить по имени
+pkill -9 mc -"убили" процесс mc
+kill -9 4242
+
+
+Потоки ввода вывода
+stdin(0) - ввод
+stdout(1) - вывод
+stderr(2) - ошибки
+cat /etc/* 2>err -вывод всех ошибок чтения файлов каталога в файл err
+echo "echo" >> file2 -дописывает текст в файл
+cat file1 file2 > file3
+
+ps -ef - список запущенных процессов
+ps -ef |grep nc -поиск по строкам процесса nc
+ls -A |grep "^\." |wc -l  -извлекаем содержимое каталога, включая скрытые файлы, ишем файлы с точкой вначале, считаем количество таких строк.
+file file1 - показывает тип файла
+| - пайп (pipe) направляет результаты предыдущей команды в следующую команду
+
+wc -l - посчитать количество строк
+
+lsov -u user |gref /dev
+
+a=`ls -A |grep "^\." |wc -l` -присваиваем подсчёт переменной
+echo $a - выводим переменную
+
+
+
+
+Урок 3. Файлы и права доступа в Linux -------------------------------------------
+
+дополнительные материалы:
+несколько статей о inode:
+https://www.kv.by/content/320700-chto-takoe-inodes-i-pochemu-oni-mogut-konchitsya-likbez
+http://parallel.uran.ru/book/export/html/382
+и статья с ibm о файловых системах в ОС linux: https://www.ibm.com/developerworks/ru/library/l-linux-filesystem/index.html
+права доступа:
+https://help.ubuntu.ru/wiki/%D1%81%D1%82%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D1%82%D0%BD%D1%8B%D0%B5_%D0%BF%D1%80%D0%B0%D0%B2%D0%B0_unix
+https://losst.ru/prava-dostupa-k-fajlam-v-linux
+sudo и супер пользователь: https://help.ubuntu.ru/wiki/%D1%81%D1%83%D0%BF%D0%B5%D1%80%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8C_%D0%B2_ubuntu
+
+Проброс портов в Virtual Box. 
+
+10 задание
+ls -lA |cut -d " " -f1| sort -r |uniq -c |grep -v "итого"
+
+Пользователь - группа пользователей - все остальные
+root UID 0 
+демоны, технологические пользователи
+обычные пользователь
+
+UID должен быть уникален для каждого пользователя
+
+
+Утилиты добавления пользователя.
+cat /etc/passwd -посмотреть файл с учётными записями
+useradd -добавить пользователя
+adduser
+useradd -s /bin/bash -d /home/user1 -m user1
+passwd user1 - меняем пароль
+
+cat /etc/group - посмотреть файл в котором описываются группы пользователей
+/etc/shadow - файл с паролями
+
+
+
+chage - параметры пользователя
+
+adduser user1
+
+groupadd -создание группы
+
+Редактирование пользователя
+vi /etc/passwd
+
+chgrp - сменить группу
+
+Права к файлам и каталогам
+(в Windows active directory)
+Аттрибуты
+ls -l
+-rw-rw-r--   ((owner (-rw), group (-rw), users(r--) ))
+
+chown -меняет владельца файла или каталога
+chown user1 err
+
+Методичка
+
+
+
+Урок 4. Регулярные выражения ----------------------------------------------
+
+что такое ip адреса https://ru.wikipedia.org/wiki/IP-%D0%B0%D0%B4%D1%80%D0%B5%D1%81
+регулярные выражения: https://regexpstudio.com/ru/regexp_syntax.html ,
+https://www.ibm.com/developerworks/ru/library/l-regexp_1/index.html, 
+https://losst.ru/regulyarnye-vyrazheniya-linux , 
+https://habr.com/ru/post/115825/
+https://sites.google.com/site/elucebnika/lekcii/-13-lekcia-regularnye-vyrazenia
+sed http://rus-linux.net/MyLDP/consol/sed.html
+awk http://rus-linux.net/MyLDP/consol/awk.html
+практический примеры по анализу логов web сервера nginx: https://easyengine.io/tutorials/nginx/log-parsing
+небольшая презентация на возможное решение практического задания https://docs.google.com/presentation/d/1JzkHMqm3FhJETcMrKLMZwKr6jDJeJsW9CxtRRhEXSTk/edit?usp=sharing
+
+cat /etc/passwd
+cat /etc/sudoers
+usermod -aG sudo user1 -добавляем пользователя в группу сохраняя его в других группах
+
+
+sed 's/123/321/g' -i file1 - меняем строку 123 на 321 и переписываем файл
+
+^ -начало строки
+$ -конец строки
+. -любой символ кроме перевода строки
+\. -точка (экранируем символ "точка". Воспринимается как точка)
+\b -граница слова с пробелом
+\B -символ толжен быть внутри слова
+\d -цифра
+
+[0-9] -любая цифра
+(?<=ip=)192\.168\.0\.1 -будет соответствие если перед выражением будет "ip="
+(?<!ip=)192\.168\.0\.1 -будет соответствие если перед выражением не будет "ip="
+192\.168\.0\.1(?=ip=) -будет найден 192.168.0.1=ip
+192\.168\.0\.1(?!ip=) -будет найден 192.168.0.1, не будет найден 192.168.0.1=ip
+
+
+Урок 5. Программирование bash -----------------------------------
+
+Advanced Bash-Scripting Guide https://www.opennet.ru/docs/RUS/bash_scripting_guide/
+специальные переменные: https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html
+еще немного переменные: http://parallel.uran.ru/book/export/html/418
+crontab: http://blog.sedicomm.com/2017/07/24/kak-dobavit-zadanie-v-planirovshhik-cron-v-linux-unix/
+немного про cron https://losst.ru/nastrojka-cron
+Про автозагрузку своих скриптов при старте, выяснилось, что по умолчанию служба rc-local в ubuntu не активирована. И прежде чем ее активировать необходимо проделать ряд действий:
+1 внести изменения в файл "конфигурации" службы (все делается от учетной записи root): 
+systemctl edit --full rc-local 
+добавить в конец следующие строки
+[Install]
+WantedBy=multi-user.target
+сохранить и выйти
+2 создать в каталоге etc файл rc.local (nano /etc/rc.local) следующего содержания:
+
+!/bin/sh -e
+rc.local
+This script is executed at the end of each multiuser runlevel.
+Make sure that the script will "exit 0" on success or any other
+value on error.
+In order to enable or disable this script just change the execution
+bits.
+By default this script does nothing.
+exit 0
+3 сделать это файл исполняемым chmod +x /etc/rc.local
+4 активировать и запустить службу rc-local systemctl enable rc-local; systemctl start rc-local
+5 далее можно добавить в файл /etc/rc.local либо путь до своего скрипта либо какую-то команду, после перезагрузки она отработает
+
+C=`ls -l |grep file` -присваиваем переменной С значение
+echo $C
+a=3
+b=4
+c=$a+$b -строка 3+4
+let "c=a+b"
+echo $c  -получаем 7
+
+Специальные переменные
+echo $? -выводит была ли выполнена предыдущая операция. Если была то 0
+$PATH  - это переменная среды, используемая для указания оболочке, где искать исполняемые файлы.
+export -выводит все используемые переменные
+export PATH=$PATH:/opt/script/bin/ -добавили в переменную PATH строку
+
+Скрипты:
+vim.tiny script.sh -внутри файла пишем umask 000; cd /opt/script/bin; touch file;
+bash script.sh -выполняем скрипт в файле
+chmod +x script.sh -второй способ через присвоение прав на выполнение
+script.sh -теперь выполняем скрипт названием файла
+
+
+
+
+
+
+Урок 6 ----------------------------------------------
+конфигурация которую я показал на уроке рабочая
+вариант решения одного из заданий с пятого урока https://docs.google.com/document/d/1-3faWD39J9RofK4egAWq4VVVU6zo_7hQBGHNnnL4jnQ/edit
+
+Урок 7 ----------------------------------------------
+Аутентификация по ключу:
+https://losst.ru/avtorizatsiya-po-klyuchu-ssh
+GIT:
+https://git-scm.com/book/ru/v2/
+https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/install/installation.md
+https://gist.github.com/mcxiaoke/055af99e86f8e8d3176e
+сервер git
+https://the-bosha.ru/2010/03/02/git/
+https://habr.com/ru/company/ruvds/blog/359216/
+
+Урок 8 ----------------------------------------------
+
+Немного доп материалов
+https://habr.com/post/253877/ введение в докер
+https://habr.com/post/346634/ тут работа с докер
+https://habr.com/post/333874/#ssylkiresursy докер и сети
+https://habr.com/company/flant/blog/336654/ шпаргалка по командам
+http://qaru.site/questions/91618/how-do-i-set-resources-allocated-to-a-container-using-docker
+https://habr.com/ru/post/324918/
+SOA https://habr.com/ru/company/mailru/blog/342526/

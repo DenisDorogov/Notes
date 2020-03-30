@@ -1,0 +1,114 @@
+<!DOCTYPE html> <!-----распечатывается 90 символов в ширину и 66 строк в высоту -------->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vue</title>
+</head> <!-- -->
+<body>
+  <div id="app">
+    <input type="text" v-model="name" />
+    <!-- Введенные данные присваиваются переменной name -->
+    <h2 v-if="name.length">Hello, {{ transformedName }}</h2><!--Свойство из comp.. -->
+    <!-- Если переменная name не пустая, то отображается приветствие.-->
+    <ul>
+      <li v-for="item in dbs">
+        <!-- Перебираем массив dbs на элементы item -->
+        <h4>{{ item.title }}</h4> <!-- Выводим данные массива.-->
+        <span>({{ item.weight }})</span>
+      </li>
+    </ul>
+    <button @click="handleButtonClick">Click me!</button>
+    <!-- Задаёт обработчиком событий соответствующий метод. -->
+    <!-- Также можно применить: v-on:click="handleButtonClick" -->
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
+  <!--    <script src="script.js"></script>-->
+  <script>
+    const app = new Vue({
+      el: '#app', // Элемент с которым vue будет работать.
+      data: {
+        name: 'Dmitry',
+        dbs: [{ title: 'MySQL', weight: 13 },
+              { title: 'MongoDB', weight: 10 },
+              { title: 'Redis', weight: 1 },
+              { title: 'RethinkDB', weight: 3 },
+             ], // Массив данных
+        },
+        methods: { // Аттрибут methods содержит обработчики событий.
+          handleButtonClick() {
+            const title = prompt('Input title');
+            const weight = prompt('Input weight');
+            this.dbs.push({ title, weight }); // Добавляем элемент массива.
+          }
+        },
+        // Метод mounted() работающий при загрузке скрипта ( когда приложение монтируется в DOM)
+        mounted() {
+          alert('mounted');
+        },
+        // Вычисляемые свойства, которые будут подмешаны к экземпляру Vue.
+        computed: { // Методы вычисляются при каждой отрисовке (не злоупотреблять)
+          transformedName() {
+            return ('Mr.' + name).toUpperCase();
+          }
+        }
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html> <!-- Сделаем теперь наш магазинчик на vue-->
+<html>
+<head>
+  <title>Shop</title>
+</head>
+
+<body>
+  <div id="app">
+    <header>
+      <input type="text" class="search-text" />
+      <button class="search-button" @click="handleSearchClick">Поиск</button>
+      <button class="cart-button">Корзина</button>
+    </header>
+    <main>
+      <div class="goods">
+        <div v-for="item in filteredItems" class="item"><!-- Шаблон нашего элемента -->
+         <!-- Перебираем элементы item из массива filteredItems -->
+          <h2>{{item.name}}</h2> 
+          <span>{{item.price}}</span>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
+  <script>
+    const app = new Vue({ // создаём приложение
+      el: '#app',
+      data: {
+        items: [],
+        filteredItems: [],
+        searchQuery: '',
+      },
+      mounted() {
+        fetch('http://localhost:3000/products') //Запрос на список товаров
+          .then(response => response.json()) // Обрабатываем запрос.
+          .then((items) => {
+            this.items = items; // Получаем массив, и присваеваем.
+            this.filteredItems = items; // Записываем это же в переменную отфильтрованных
+          });
+      },
+      methods: {
+        handleSearchClick() {
+        }
+      }
+    })
+  </script>
+</body>
+</html>

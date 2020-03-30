@@ -1,0 +1,145 @@
+Урок 1. Реляционные базы данных
+
+MySQL
+MS SQL
+Oracle
+
+------------------------------------------------------------
+Урок 2. Установка СУБД
+
+Уважаемые слушатели!
+Вышла новая версия MySQL 8.0, в то время, как курс ориентирован на MySQL 5.7. В новой версии были исправлены ошибки и добавлен новый функционал, но изменился интерфейс инсталлятора, а также была убрана поддержка старых версий OC Windows. Если у вас Windows 7 и ниже, либо вы не хотите разбираться в новом инсталляторе MySQL, вы можете скачать инсталлятор для старой версии по ссылке, выбрав в выпадающем списке Product Version 5.7.11 https://downloads.mysql.com/archives/installer/
+
+MySQL Workbench
+
+------------------------------------------------------------
+Урок 3. Проектирование базы данных, нормальные формы
+
+Комментарий. В уроке допущена ошибка, в таблице Товары в 3НФ вместо столбца Бренд должен быть столбец ID бренда.
+
+ОФИЦИАЛЬНАЯ ДОКУМЕНТАЦИЯ:
+http://dev.mysql.com/doc/refman/5.7/en/sql-syntax-data-definition.html
+
+кодировка UTF-8_bin 
+
+--Создаём базу данных.
+CREATE SCHEMA 'shop'DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+
+
+--Создаём таблицу category в базе shop с первым столбцом id c типом данных INT и не может имметь значение NULL. 
+CREATE TABLE 'shop'.'category' (
+	'id' INT NOT NULL,
+	'name' VARCHAR(128) NOT NULL, --столбец со строковым типом VARCHAR и длинной 128 символов.
+	'discount' TINYINT NOT NULL,  --столбец с типом данных TINYINT (Значения от -128 до 127)
+PRIMARY KEY ('id'));                  --обозначаем первичный ключ id.
+
+--Редактируем таблицу. Добавляем еще один столбец alias_name
+ALTER TABLE 'shop' . 'category'  
+ADD COLUMN 'alias_name' VARCHAR(128) NULL AFTER 'discount';
+
+--Удалить базу данных
+DROP TABLE 'shop'. 'category'
+
+--Удаляем базу данных (schema)
+DROP DATABASE 'shop'
+
+--
+show databases; -- смотрим базы данных.
+use shop; --работаем с базой shop.
+show tables; --смотрим какие таблицы существуют. 
+alter table category; --редактируем таблицу
+add column alias_name varchar(128) null after discount; --добавляем столбец
+show columns category;   --смотрим таблицу
+show columns from category;   --смотрим таблицу c описанием
+
+
+Официальная документация:
+https://dev.mysql.com/doc/refman/8.0/en/sql-syntax-data-definition.html
+
+
+------------------------------------------------------------
+Урок 4. SQL - команда CREATE
+
+кодировка UTF-8_bin 
+
+--Создаём базу данных.
+CREATE SCHEMA 'shop'DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+
+
+--Создаём таблицу category в базе shop с первым столбцом id c типом данных INT и не может имметь значение NULL. 
+CREATE TABLE 'shop'.'category' (
+	'id' INT NOT NULL,
+	'name' VARCHAR(128) NOT NULL, --столбец со строковым типом VARCHAR и длинной 128 символов.
+	'discount' TINYINT NOT NULL,  --столбец с типом данных TINYINT (Значения от -128 до 127)
+PRIMARY KEY ('id'));                  --обозначаем первичный ключ id.
+
+--Редактируем таблицу. Добавляем еще один столбец alias_name
+ALTER TABLE 'shop' . 'category'  
+ADD COLUMN 'alias_name' VARCHAR(128) NULL AFTER 'discount';
+
+--Удалить базу данных
+DROP TABLE 'shop'. 'category'
+
+--Удаляем базу данных (schema)
+DROP DATABASE 'shop'
+
+show databases; -- смотрим базы данных.
+use shop; --работаем с базой shop.
+show tables; --смотрим какие таблицы существуют. 
+alter table category; --редактируем таблицу
+add column alias_name varchar(128) null after discount; --добавляем столбец
+show columns category;   --смотрим таблицу
+show columns from category;   --смотрим таблицу c описанием
+
+Официальная документация:
+https://dev.mysql.com/doc/refman/8.0/en/sql-syntax-data-definition.html
+
+------------------------------------------------------------
+Урок 5. SQL - Команда INSERT
+SELECT * FROM shop.category; --выбираем таблицу
+--Далее вставляем данные в таблицу. 
+INSERT INTO 'shop'.'category' ('id','name','discount')VALUES('1','Женские','5');
+
+--Далее меняем свойство столбца id. Добавляем автоинкремент, который будет автоматически подставлять следующий id.
+ALTER TABLE 'shop'.'category'
+CHANGE COLUMN 'id' 'id' INT(11) NOT NULL AUTO_INCREMENT;
+
+------------------------------------------------------------
+Урок 6. SQL - Команды SELECT и WHERE
+use shop; --начинаем работу с базой данных
+-- Вывести товары из таблицы category
+SELECT * FROM category;
+-- Выведем товар с id = 3 (Не равен <>)
+SELECT * FROM category WHERE id = 3;
+-- Из таблицы category выведем товары поле discount  у которых меньше 5. 
+SELECT * FROM category WHERE discount > 5;
+-- ... и больше или равно 10
+SELECT * FROM category WHERE (discount < 5) AND (discount >= 10); 
+-- ... не меньше 5
+SELECT * FROM category WHERE NOT (discount < 5)
+-- ... не пустые товары
+SELECT * FROM category WHERE IS NOT NULL
+
+------------------------------------------------------------
+Урок 7. SQL-команды DISTINCT, ORDER BY, LIMIT
+-- Выбираем столбец name и discount
+SELECT name, discount FROM category
+
+-- Вывести все уникальные значения скидок
+SELECT DISTINCT discount FROM category;
+
+--Вывести все категории товаров. Сортировать по размеру скидки.
+SELECT * FROM category ORDER BY discount ASC; --ASC - прямой порядок (необязательно)
+SELECT * FROM category ORDER BY discount DESC; -- DESC обратный порядок
+-- выводим товары с ненулевым значением скидки и сортировкой.
+SELECT * FROM category WHERE discount <> 0 ORDER BY discount DESC; --порядок ключевых слов важен!
+-- Вывести первые две категории товара.
+SELECT * FROM category 	LIMIT 2;
+------------------------------------------------------------
+Урок 8. SQL-команды DELETE и UPDATE
+
+------------------------------------------------------------
+
+------------------------------------------------------------
+
+------------------------------------------------------------

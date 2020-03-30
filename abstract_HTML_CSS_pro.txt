@@ -1,0 +1,206 @@
+Кадочников Алексей - учитель
+Сергей Поддубный - наставник
+
+WebStorm PhP 
+Николай Котов
+
+
+Урок 1
+
+Макеты для вёрстки 
+https://drive.google.com/drive/u/0/folders/0B0l8jmNN0HJEd1prWS1Eb29IQTQ
+
+https://jsfiddle.net/alexey_kadochnikov/h1Lqcd4w/5/
+
+Ссылки на редакторы кода 
+1. https://code.visualstudio.com/ 
+2. http://brackets.io/
+3. https://atom.io/
+4. https://www.sublimetext.com/3
+?
+https://assets2.adobe.com
+https://necolas.github.io/normalize.css/
+http://flexboxfroggy.com/#ru - обязательно пройти
+http://cssgridgarden.com/#ru
+https://teamtreehouse.com/?irgwc=1&click_id=2%3AqwTR2yV2%3AgQOdx9lXTS23eUkgR7JXIPWF2Qo0&iradid=228915&ircid=3944&irpid=371033&iradname=Online%20Tracking%20Link&iradtype=ONLINE_TRACKING_LINK&iradsize=&irmpname=Big%20Ice%20Cube%20LLC&irmptype=mediapartner&utm_source=ir&cid=4612 - Курсы от создателя FLEXBOX FROGGY
+
+
+https://fonts.google.com/
+https://necolas.github.io/normalize.css/
+https://fonts.google.com/specimen/Lato
+?
+?
+•
+Сервисы для работы с макетом
+https://assets.adobe.com
+https://avocode.com/
+https://zeplin.io/
+
+Чтиво
+Modernizr: практическое применение - https://habrahabr.ru/post/144352/ 
+Modernizr https://modernizr.com/
+Я полюбил верстку после этого: Zeplin в бою - https://habrahabr.ru/company/uteam/blog/315542/
+Первый взгляд на Avocode - https://habrahabr.ru/post/231381/
+•
+Плагины для редакторов кода
+Autosave Files on Window Blur (чтобы не сохранять файлы по 100 раз)
+Beautify (Авто формат кода CTRL + SHIFT +L, аналог tidy в jsfiddle )
+CSSFier (Расширение для преобразования HTML в CSS)
+Emmet(Самый полезный плагин)
+•
+Полезные сайты
+http://www.w3schools.com/
+https://validator.w3.org
+https://developer.mozilla.org
+https://webref.ru/
+http://htmlbook.ru/
+http://html5doctor.com/
+http://necolas.github.io/normalize.css/ - normalize
+http://css-live.ru/wp-content/uploads/2012/07/html5-flowchart-ru.png - схема выбора html5
+https://docs.emmet.io/abbreviations/syntax/
+
+______________________________________________________________________________________
+
+Урок 3
+
+caniuse.com - проверка применимости к браузе
+ru.bem.info - когда кончается фантазия...
+webcode.tools - помощник по элементам
+howtocenterincss - генератор центрирования
+https://webcode.tools/html-generator генератор
+
+______________________________________________________________________________________
+
+Урок 4
+
+LESS AutoCompile
+https://code.visualstudio.com/ Live Sass Compiler
+
+http://sass-lang.com/ офф сайт
+http://koala-app.com/
+
+Настройка sass для webstorm
+
+https://www.youtube.com/watch?v=qJeTdC14SC8 Mac OS
+https://www.youtube.com/watch?v=_qBpyFAEfMk&t=29s windows
+статься по установке sass windows http://www.site-ontop.ru/novosti-stati/bez_razdela/176-ustanovka-sass-scss-i-podklyuchenie-ego-k-phpstorm.html
+
+______________________________________________________________________________________
+
+Урок 5
+
+https://ru.bem.info/methodology/quick-start/ БЭМ
+https://jsfiddle.net/alexey_kadochnikov/mo1a56hf/7/
+http://csshexagon.com/
+http://animista.net/play/background/ken-burns/kenburns-right
+
+______________________________________________________________________________________
+
+Урок 6
+
+User Javascript and CSS - расширение для браузера по изменению элементов.
+figma.com - что-то вроде визуальной верстки
+meta viewport
+https://chrome.google.com/webstore/detail/perfectpixel-by-welldonec/dkaagdgjmgdmbnecmcefdhjekcoceebi?hl=ru
+https://developer.mozilla.org/ru/docs/Mozilla/Mobile/Viewport_meta_tag
+Макеты адаптивного сайта https://drive.google.com/drive/folders/1G_DYCXT0Y7cCIL21qekGtO_8Svr8835D
+
+______________________________________________________________________________________
+
+Урок 7
+
+Все наведения и нажатия должны быть, если это кнопка добавлять эффект обязательно (transition)
+Footer прижат к низу экрана, не сверху, не по центру
+Иконки соц сетей лучше сделать не просто картинками или спрайты или fontawesome https://jsfiddle.net/alexey_kadochnikov/x0vL8b2y/3/
+Текст, даже если он большой, запрещается делать картинкой, он должен быть всегда текстом, который можно в любую миниту поменять
+Если ссылка никуда не ведёт, добавляем href="#", пустаю не оставляем
+Множественный бекграунд, если несколько фоновых картинок https://jsfiddle.net/wfpo9nd8/11/
+Приближение и отдаление макета (до 25% отдалять не обязательно, 67%-150%)
+Логотип обязательно ссылка на главную страницу
+Проверить, нет ли каких-то эффектов наведения или фокуса сразу в макете
+Если что-то непонятно спрашивать у дизайнера, не чудить самому :)
+Проверка большого текста
+типограф
+padding для полей ввода, слева и справа
+Валидатор
+Ссылки на полезные ресурсы
+
+https://jigsaw.w3.org/css-validator Валидатор для css
+https://fontawesome.com/ иконочный шрифт
+https://webcode.tools/html-generator как быстрее всего добавить аудио/видео на странице
+https://validator.w3.org/nu/ Валидатор
+http://animista.net/play/basic Генератор создания анимаций
+https://tinypng.com/ конвертер фотографий, для уменьшения размера фото
+https://caniuse.com/ поддержка свойств в браузерах
+http://browsershots.org/ проверка сайта на кроссбраузерность
+https://necolas.github.io/normalize.css/ обнуление стилей
+https://autoprefixer.github.io/ru/ добавление префиксов к css
+https://ru.bem.info/methodology/quick-start/ БЭМ (методология, как можно называть классы)
+LESS AutoCompile (расширение для brackets, чтобы заработал препроцессоры Less)
+Live Sass Compiler (расширение для vs code, чтобы заработал препроцессоры Sass)
+https://code.visualstudio.com/ ссылка на vs code
+
+Вебстудии
+Фриланс
+upwork.com
+воркзилла
+
+
+______________________________________________________________________________________
+
+
+
+Доводка проекта:
+Пиксель перфект,
+Кнопки
+Валидатор
+Ползунок
+Типограф
+http://browsershots.org/ 
+
+
+•
+
+Моя группа вк, где добавляю информацию которая попадается на просторах интернета, добавляться не обязательно, но если надумаете, всем рад https://vk.com/html_css_easily
+
+_________________________________________________________________
+Сервис трансляций уроков - progschool.clickmeeting.com
+
+
+
+
+
+display: flex; {
+	justify-content: flex-start flex-end center space-between space-around;
+	align-items: flex-start flex-end center space-between space-around;
+	flex-direction: row row-reverse column column-reverse;
+	order: 1;
+	align-self: flex-start flex-end center space-between space-around;
+	flex-wrap: nowrap wrap wrap-reverse;
+	flex-flow: nowrap wrap wrap-reverse row row-reverse column column-reverse;	
+	align-content: flex-start flex-end center space-between space-around stretch;
+	
+	
+}
+
+HTML 5 - симантические элемены
+<header>
+<nav>
+<main>
+<footer>
+<section>
+<article>
+<aside>
+<figure> <figcaption>
+<details><summary></summary></details>
+
+Схлопывание не срабатывает:
+
+для элементов, у которых установлено свойство padding.
+для элементов, у которых на стороне схлопывания задана граница;
+на элементах с абсолютным позиционированием, т.е. таких, у которых position установлено как absolute;
+на плавающих элементах (для них свойство float задано как left или right);
+для строчных элементов;
+для <html>.
+
+

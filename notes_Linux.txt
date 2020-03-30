@@ -1,0 +1,17 @@
+﻿
+
+sudo -i         - получаем права суперпользовател¤ на посто¤нную
+sudo apt update - обновить список пакетов программ
+sudo apt upgrade -y - обновление пакетов
+apt install gcc make perl mc openssh-server -y -устанавливаем пакеты
+
+//дл¤ работы wi-fi модул¤
+sudo apt-get install linux-headers-generic kernel-package
+sudo apt-get install Чreinstall bcmwl* firmware-b43-installer b43-fwcutter
+
+
+Notepadqq - еще одна альтернатива Notepad ++ в Linux
+”становить можно использу¤ следующие команды 
+sudo add-apt-repository ppa:notepadqq-team/notepadqq
+sudo apt-get update
+sudo apt-get install notepadqq

@@ -1,0 +1,1095 @@
+Урок 1 Введение PHP ----------------------------------------
+Коментарии к уроку:
+Трансляция пройдет здесь -> https://www.youtube.com/watch?v=J2Wnw9TIabs&feature
+.
+Связь со мной:
+Тимофей Сафронов
+tg: @fCliff
+.
+Литература:
+1. Котеров Д.: PHP 7
+2. Head First PHP and MySQL
+
+.
+Интересные ссылки(кликабельны):
+PHP: Приведение типов https://puzzleweb.ru/php/03_datatypes4.php
+Приведение типов в PHP habr https://habr.com/ru/post/259497/
+Стандарты оформления кода https://svyatoslav.biz/misc/psr_translation/
+10 отличий Apache от Nginx https://ekaterinagoltsova.github.io/posts/apache-vs-nginx/
+Apache vs Nginx: практический взгляд https://habr.com/ru/post/267721/
+Unix-время https://ru.wikipedia.org/wiki/Unix-%D0%B2%D1%80%D0%B5%D0%BC%D1%8F
+
+Домашнее задание:
+1. Установить программное обеспечение: веб-сервер, базу данных, интерпретатор, текстовый редактор. Проверить, что все работает правильно.
+2. Выполнить примеры из методички и разобраться, как это работает.
+3. Объяснить, как работает данный код:
+<?php
+    $a = 5;
+    $b = '05';
+    var_dump($a == $b);         // Почему true?
+    var_dump((int)'012345');     // Почему 12345?
+    var_dump((float)123.0 === (int)123.0); // Почему false?
+    var_dump((int)0 === (int)'hello, world'); // Почему true?
+?>
+4. Используя имеющийся HTML-шаблон, сделать так, чтобы главная страница генерировалась через PHP. Создать блок переменных в начале страницы. Сделать так, чтобы h1, title и текущий год генерировались в блоке контента из созданных переменных.
+5. *Используя только две переменные, поменяйте их значение местами. Например, если a = 1, b = 2, надо, чтобы получилось b = 1, a = 2. Дополнительные переменные использовать нельзя.
+
+Apache NJINX
+MySQL
+
+php.net - скачать и документация
+
+GUI для MySQL:
+HeidiSQL;
+MySQL Workbanch;
+
+Запуск php интерпритатора.
+Что-бы не запускать интерпритатор командами с использованием полного пути делаем:
+Панель управления\Система и безопасность\Система --> Дополнительные параметры системы
+--> Переменные среды --> Системные переменные --> Path --> Изменить --> Добавить c:\php
+
+Но проще работать с Open Server
+
+У Арестова на 1:20 описывается установка xdebug отладчика
+
+<?php
+//Коментарий
+#Коментарий
+/*Коментарий*/
+
+.phpinfo(); // Информация о сервере
+echo 'Привет мир';
+?>        /* Необязательно и нежелательно. */
+<?php
+print 'Привет мир' // может отдавать значение true или false 
+
+echo 'Привет мир'.PHP_EOL; // универсальный перенос строки для разных платформ
+Переменные:
+$variable
+$varNum
+$_varNum5 //обычно заприваченная переменная.
+
+//10 типов переменных
+boolean (логический тип); 
+integer (целые числа); 
+double (дробные числа); 
+string (строки); 
+array (массивы); 
+object (объекты); 
+resource (ресурсы); 
+NULL.
+!  Callable
+!  Iterable
+
+$name = 'John';
+echo ('Привет '.$name);
+var_dump($name); /*выводит и указывает тип переменной*/
+
+define('MY_CONST', 100); /*Константа (без знака доллара)*/
+const BR = '<br/>'; /*Константа (без знака доллара)*/
+
+$a = 3;
+$b = 5;
+echo $a + $b;
+$b += $a;
+ 
+Операции
++ - * /  %
+** /*Возведение в степень*/
+echo 'a + b = ' . ($a + $b) . BR;
+$a % $b /* Остаток от деления */
+$a ** $b /* В степень */
+echo '$a + $b' . ($a + $b) . BR;//Конкотенация выше приоритетом чем + и -
+echo '$a + $b' . $a * $b . BR;
+
+echo ($a + '3').BR; /* 6 */
+echo $a.$b; /* '85' */
+echo 'У нас всего животных: ' . ('12 гусей' + '1 жираф'); /* 13 т.к. плюс переводит строки в числа, если в начале есть число.*/
+
+$a = (int)"2f";// int(2), Явное указание типа. Приводит данные к integer
+
+echo $c++;
+echo ++$c /*Выводит после увеличения*/
+
+$g = 'гусь';
+echo 'Я люблю $g';
+echo "Я люблю $g"; /* В двойных кавычках увидит переменную */
+/* \" Экранирование кавычки */
+
+//Глобальные переменные
+echo $_SERVER['HTTP_USER_AGENT'].BR;
+echo $_SERVER['REMOTE_ADDR'].BR;
+
+//Результат сравнения можно присвоить переменной
+$isEqual = $a == $b; //true || false
+
+$isEqual += true; // Равно 1 если false + true
+
+$today = getDate()
+var_dump($today)  //выведет объект
+$d = $today['year'];
+echo $today['year'];
+print_r $today['year'];
+?>
+Выведем текущее время.
+<?php
+$d = $today['mday'];
+$m = $today['mon'];
+$y = $today['year'];
+print(date('H:i:s')); // Выводит сразу в нужном формате  
+?>
+<h1>Текущее время: <?=$d ?> число<?=$d ?><?=$d ?></h1>
+
+
+
+ДЗ выводим время
+
+
+Если html основной, то нужно выводить им, включая php
+
+Урок 2 Условные блоки, ветвления, функции -----------------------------------------------
+Коментарии к уроку:
+Интересные ссылки (кликабельны):
+Is_null Vs Empty Vs Isset https://www.codepunker.com/blog/is-null-vs-empty-vs-isset-one-lesson-all-php-coders-should-learn?lang=ru
+Блок-схемы алгоритмов. ГОСТ. https://pro-prof.com/archives/1462
+
+Домашнее задание:
+1. Объявить две целочисленные переменные $a и $b и задать им произвольные начальные значения. Затем написать скрипт, который работает по следующему принципу:
+если $a и $b положительные, вывести их разность;
+если $а и $b отрицательные, вывести их произведение;
+если $а и $b разных знаков, вывести их сумму;
+Ноль можно считать положительным числом.
+2. Присвоить переменной $а значение в промежутке [0..15]. С помощью оператора switch организовать вывод чисел от $a до 15.
+3. Реализовать основные 4 арифметические операции в виде функций с двумя параметрами. Обязательно использовать оператор return.
+4. Реализовать функцию с тремя параметрами: function mathOperation($arg1, $arg2, $operation), где $arg1, $arg2 – значения аргументов, $operation – строка с названием операции. В зависимости от переданного значения операции выполнить одну из арифметических операций (использовать функции из пункта 3) и вернуть полученное значение (использовать switch).
+5. Посмотреть на встроенные функции PHP. Используя имеющийся HTML-шаблон, вывести текущий год в подвале при помощи встроенных функций PHP.
+6. *С помощью рекурсии организовать функцию возведения числа в степень. Формат: function power($val, $pow), где $val – заданное число, $pow – степень.
+7. *Написать функцию, которая вычисляет текущее время и возвращает его в формате с правильными склонениями, например:
+22 часа 15 минут
+21 час 43 минуты
+
+
+Ветвления
+<?php
+if ($a>0) {
+	echo "Больше нуля";
+} elseif ($a = 0) {
+	echo 'Равно нулю';
+} else {
+	echo "Меньше нуля";		
+}
+
+switch ($a) {
+	case 1 :
+		echo "Январь";
+		brake;
+	case 2 :
+		echo "Февраль";
+		brake;
+	case 3 :
+		echo "Март";
+		brake;
+// И так далее
+	 default:
+		echo "Error";
+}
+const SPEED = 60;
+if (SPEED > 60) {
+	//...
+}
+echo (SPEED > 60) ? "ШТРАФ" : "Всё впорядке"; // Тернарный оператор
+ 
+echo isset($word) ? $word : "Переменной не существует" // Проверка существования переменной
+echo $word ?? "Переменной не существует"; // Тоже самое, только проще запись
+
+//-----табличка--------
+isset($val)
+0, false, array(), "0", "", 0.0 //true
+null //false
+var $val; - переменная объявлена, но не проинициализирована // false
+1, true, "a", " ", 1.0, "\ 0"(байтовый ноль) // true
+
+empty($val)
+0, false, array(), "0", "", 0.0 //true
+null //true
+var $val; - переменная объявлена, но не проинициализирована // true
+1, true, "a", " ", 1.0, "\ 0"(байтовый ноль) // false
+
+is_null($val)
+0, false, array(), "0", "", 0.0 //false
+null //true
+var $val; - переменная объявлена, но не проинициализирована // true
+1, true, "a", " ", 1.0, "\ 0"(байтовый ноль) // false
+
+$val = $val ?? 'default'
+0, false, array(), "0", "", 0.0 //исходное значение
+null //'default'
+var $val; - переменная объявлена, но не проинициализирована // 'default'
+1, true, "a", " ", 1.0, "\ 0"(байтовый ноль) // исходное значение
+//-----------------------
+
+//Функции
+function MyFunction($var, $var1 = true) { //Функция. Одна переменная по умолчанию = true
+	global $varGlobal = 100;	//Объявляем глобальную переменную внутри функции
+	echo "Возвращаю умноженное на 100";	
+	return $var*$varGlobal;
+}
+MyFunction(73); //Вызов функции
+
+mt_rand(-5000; 5000); // Функция возвращает случайное число
+
+//Рекурсия
+function factor($n) { //Функция вычисления факториала
+	if ($n = 1) return 1; //Допустимо без {}
+	return $n * factor($n - 1);
+}
+echo "Факториал равен factor(5)";
+
+Практическое задание
+1. Объявить две целочисленные переменные $a и $b и задать им произвольные начальные
+значения. Затем написать скрипт, который работает по следующему принципу:
+a. Если $a и $b положительные, вывести их разность.
+b. Если $а и $b отрицательные, вывести их произведение.
+c. Если $а и $b разных знаков, вывести их сумму.
+Ноль можно считать положительным числом.
+2. Присвоить переменной $а значение в промежутке [0..15]. С помощью оператора
+switch организовать вывод чисел от $a до 15.
+3. Реализовать основные 4 арифметические операции в виде функций с двумя параметрами.
+Обязательно использовать оператор return.
+4. Реализовать функцию с тремя параметрами: function mathOperation($arg1, $arg2, $operation),
+где $arg1, $arg2 – значения аргументов, $operation – строка с названием операции. В
+зависимости от переданного значения операции выполнить одну из арифметических операций
+(использовать функции из пункта 3) и вернуть полученное значение (использовать switch).
+5. Посмотреть на встроенные функции PHP. Используя имеющийся HTML шаблон, вывести
+текущий год в подвале при помощи встроенных функций PHP.
+6. *С помощью рекурсии организовать функцию возведения числа в степень. Формат: function
+power($val, $pow), где $val – заданное число, $pow – степень.
+7. *Написать функцию, которая вычисляет текущее время и возвращает его в формате с
+правильными склонениями, например: 22 часа 15 минут, 21 час 43 минуты.
+?>
+global
+
+Урок 3 Циклы и массивы -------------------------------------
+Коментарии к уроку:
+Связь: 
+tg:@fCliff
+Интересные ссылки
+! Как устроены массивы в PHP https://habr.com/ru/post/162685/
+Ссылки на переменную. С примером реального применения. http://web-sprints.ru/php-ssyilki-na-peremennuyu/
+Углублено:
+Работа с памятью https://habr.com/ru/post/134784/
+Итераторы https://habr.com/ru/post/324934/
+
+Циклы
+<?php 
+while ($i < 10) {
+	//Тело цикла
+	$i++;
+}
+while ($i < 10) {
+	if ($i % 2 == 0) continue //Возвращаемся в начале. Можно также break;
+	$i++;
+}
+do {
+	// Тело цикла
+} while (true);
+
+for ($i = 0, $j = 0; $i < 10; $i++, $j--) {
+	//Тело цикла
+};
+
+
+function degree ($number, $degree) {
+	$temp = 1;
+	while ($degree != 0) {
+		$temp *= $number;
+		$degree--;
+	}
+	return $temp;
+}
+
+continue(2) //Вернётся в родительский цикл
+
+for ($i = 1, $steps = ''; $i < END_CYCLE; i++, $steps .= 'Топ ' ) {
+	echo $steps;
+}
+?>
+Массивы
+<?php
+//$MyArray = array(); - не применяется уже
+$MyArray = [];
+$MyArray[0] = 1;
+$MyArray[] = 2;
+$MyArray[] = 3;
+$MyArray[] = 4;
+$MyArray[] = 5; // Значения добавляются в массив [1,2,3,4,5]}
+// Если в промежутке указываем большее значение ячейки, то запись продолжается от последней.
+// Также возможно указывать строковые ключи.
+
+echo = $MyArray[0]; 
+print_r($MyArray)
+
+$MyArray = [
+	0 => 1,
+	1 => 2,
+	2 => 3,
+	'четвёртая' => 4
+]; // Другой способ задания массива
+
+$MyArray = [
+    1 => [1, 2, 3, 4, 5],
+    2 => 'Февраль',
+    'три' => "Март",
+    4 => "Апрель",
+    'sdkjfskjvn54j5njn454j5n' => "Май",
+    6 => "Июнь", "Июль", "Август", "Сентябрь", "Октябрь",
+    "Ноябрь", "Декабрь" //Продолжает заполнение массива по порядку индексов автоматически
+];
+$MyArrayCount = count($MyArray);
+for ($i = 1; $i <= $MyArrayCount; $i++) {
+    echo "Месяц ".$MyArray[$i]."<br/>" ;
+}; // Перебираем и выводим массив. Не все элементы выведутся.
+
+foreach ($MyArray as $value) { //Пробегает по всем элементам массива, в независимости от ключей.
+	echo "Месяц ".$MyArray[$value]."<br/>" ;
+}
+foreach ($MyArray as $key => $value) { //Либо можно использовать ещё и ключи
+	
+}
+
+count($MyArray) // Количество элементов массива
+in_array('needle', $MyArray) //Эта функция ищет в массиве $MyArray значение needle и возвращает true, если оно найдено, и false если нет.
+
+explode(';', $MyArray); //расщепляет строку на отдельные помещаемые в массив элементы, используя разделитель, переданный в качестве аргумента.
+implode(' ',$MyArray); //осуществляет противоположную операцию: она сжимает элементы массива в одну строку, соединяя их с помощью переданного аргумента.
+
+$May = $MyArray['sdkjfskjvn54j5njn454j5n'];// Присваиваем значение элемента массива. "Май" 
+$May = &$MyArray['sdkjfskjvn54j5njn454j5n'];// Присаиваем ссылку на элемент массива 
+$May = 'Больше не май'; // Меняем значение элемента массива к ключём 'sdkjfskjvn54j5njn454j5n'
+
+?>
+Вставка значений переменных в HTML
+<?php
+	$buyinList = ['Bread', 'Cheese', 'Meat', 'Aggs', 'Milk', 'Soup'];
+?>
+<ul>
+   <?php foreach ($buyinList as $key => $value) :?>
+    <li><?=$key?> - <?=$value?></li> 
+    <? endforeach;?>
+ </ul>
+Примеры вставки php в html в файлах папки Материалы.
+
+
+Практическое задание.
+
+1. С помощью цикла while вывести все числа в промежутке от 0 до 100, которые делятся на 3 без остатка.
+2. С помощью цикла do…while написать функцию для вывода чисел от 0 до 10, чтобы результат выглядел так:
+0 – ноль.
+1 – нечетное число.
+2 – четное число.
+3 – нечетное число.
+…
+10 – четное число.
+
+3. Объявить массив, в котором в качестве ключей будут использоваться названия областей, а в качестве значений – массивы с названиями городов из соответствующей области. Вывести в цикле значения массива, чтобы результат был таким:
+Московская область:
+Москва, Зеленоград, Клин
+Ленинградская область:
+Санкт-Петербург, Всеволожск, Павловск, Кронштадт
+Рязанская область … (названия городов можно найти на maps.yandex.ru)
+4. Объявить массив, индексами которого являются буквы русского языка, а значениями – соответствующие латинские буквосочетания (‘а’=> ’a’, ‘б’ => ‘b’, ‘в’ => ‘v’, ‘г’ => ‘g’, …, ‘э’ => ‘e’, ‘ю’ => ‘yu’, ‘я’ => ‘ya’).
+Написать функцию транслитерации строк.
+
+5. Написать функцию, которая заменяет в строке пробелы на подчеркивания и возвращает видоизмененную строчку.
+6. В имеющемся шаблоне сайта заменить статичное меню (ul – li) на генерируемое через PHP. Необходимо представить пункты меню как элементы массива и вывести их циклом. Подумать, как можно реализовать меню с вложенными подменю? Попробовать его реализовать.
+7. *Вывести с помощью цикла for числа от 0 до 9, не используя тело цикла. Выглядеть должно так:
+for (…){ // здесь пусто}
+
+8. *Повторить третье задание, но вывести на экран только города, начинающиеся с буквы «К».
+9. *Объединить две ранее написанные функции в одну, которая получает строку на русском языке, производит транслитерацию и замену пробелов на подчеркивания (аналогичная задача решается при конструировании url-адресов на основе названия статьи в блогах).
+
+
+Урок 4 Работа с файлами ------------------------------------------------------------------
+Коментарии к уроку:
+Разбор предыдущих практических заданий от моего коллеги: 
+1 -> https://youtu.be/UCw62tCLz30
+2 -> https://youtu.be/r8Rxx0HVapA 
+3 -> https://youtu.be/MfxfMUEf6PI
+https://www.php.net/manual/en/function.scandir.php
+
+
+Корневая директория
+-public
+	img
+	css
+	js
+-enjine
+-config
+-data
+-templates
+<?php
+// Глобальный метод подключения файла
+include // Не выдаёт ошибку при отсутствии файла.
+require //Выдаёт ошибку если файла нет, и завершиет выполнение программы.
+include_once //выводит файл один раз, проверяя подключенные.
+?>
+<?php //Файл index.php
+include 'test.php'; //добавили содержимое файла
+addTest(); //Вызываем функцию из файла test.php
+
+
+?>
+<?php // Файл test.php
+function addTest() {
+	//тело функции
+}
+?>
+<?
+require($_SERVER[DOCUMENT_ROOT]."bitrix/footer.php";//Подключения футера в отдельном файле
+//DOCUMENT_ROOT - глобальная переменная обозначающая корневой каталог.
+define('SITE_ROOT', __DIR__ . DIRECTORY_SEPARATOR); //Константа хранящая корневой каталог.
+//__DIR__ - Директория файла. Если используется внутри подключаемого файла, то возвращается директория этого файла. 
+// DIRECTORY_SEPARATOR - предопределённая константа, содержащая разделитель пути. Для Windows это «\», для Linux и остальных — «/».
+define('CSS_ROOT', __DIR__ . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR);
+
+include SITE_ROOT . 'lesson\file.txt';//Константа для указания корня.
+?>
+<link rel="stylesheet" href="<?=CSS_ROOT.'main.css'?>">
+<!--Линк на файл стилей с помощью переменной -->
+
+PHP API - Почитать
+PHP MVC - Почитать
+
+
+Базовые операции работы с файлами: чтение, запись
+<?php
+$file = fopen("file1.txt","r")  or die("Ошибка открытия файла");//Открываем поток
+//(путь, режим открытия файла) , or die = or exit - закрывает программу полностью
+fclose($file)//Закрываем поток
+
+//Еще вариант:
+if(!$foo = fopen("file.txt","r") )
+{
+    echo("Ошибка открытия файла");
+}
+
+// вывод файла 
+$file = fopen("file.txt", "r") or die();
+
+	//полностью за 1 раз
+    $buffer = fread($file, filesize("file.txt"));//Скачиваем файл полностью
+
+	//Либо по частям
+	$buffer = '';
+    while (!feof($file)) { //до тех пор пока не достигнет конца файла
+        $buffer .= fread($file, 1); // По одному символу
+    }
+	//end
+	
+	// То же самое одной строкой
+	echo file_get_contents("file.txt");
+	
+	echo '<pre>';
+    echo $buffer;
+    echo '</pre>';
+
+    fclose($file);
+//------------
+$filename = "f_.txt";
+file_put_contents($filename, " Some text", FILE_APPEND);//Создайтся файл и записывается туда строка
+
+//FILE_APPEND - файл дописывается
+//LOCK_EX - для получения эксклюзивной блокировки (запись).
+
+//Пример	
+$filename = 'file.txt';
+$somecontent = "Добавить это к файлу";
+
+// Вначале давайте убедимся, что файл существует и доступен для записи.
+if (is_writable($filename)) {
+
+    // В нашем примере мы открываем $filename в режиме "записи в конец".
+    // Таким образом, смещение установлено в конец файла и
+    // наш $somecontent допишется в конец при использовании fwrite().
+    if (!$handle = fopen($filename, 'w')) {
+        echo "Не могу открыть файл ($filename)";
+        die;
+    }
+
+    // Записываем $somecontent в наш открытый файл.
+    if (fwrite($handle, $somecontent) === FALSE) {
+        echo "Не могу произвести запись в файл ($filename)";
+        exit;
+    }
+
+    echo "Ура! Записали ($somecontent) в файл ($filename)";
+
+    fclose($handle);
+
+} else {
+    echo "Файл $filename недоступен для записи";
+}
+?>
+
+
+
+
+1. Создать галерею фотографий. Она должна состоять всего из одной странички, на которой пользователь видит все картинки в уменьшенном виде и форму для загрузки нового изображения. При клике на фотографию она должна открыться в браузере в новой вкладке. Размер картинок можно ограничивать с помощью свойства width. При загрузке изображения необходимо делать проверку на тип и размер файла.
+2. *Строить фотогалерею, не указывая статичные ссылки к файлам, а просто передавая в функцию построения адрес папки с изображениями. Функция сама должна считать список файлов и построить фотогалерею со ссылками в ней.
+https://www.php.net/manual/en/function.scandir.php
+3. *[ для тех, кто изучал JS-1 ] При клике по миниатюре нужно показывать полноразмерное изображение в модальном окне (материал в помощь: https://www.internet-technologies.ru/articles/sozdaem-prostoe-modalnoe-okno-s-pomoschyu-jquery.html)
+
+
+Урок 5 Базы данных MySQL и работа с ними на уровне PHP -----------------------------------
+Коментарии к уроку:
+Разбор 4 задания: https://youtu.be/9RW-q3bB50k
+В терминале: 
+mysql --version
+mysql -uroot //Запускаем управление базой данных
+<?php
+print_r(stream_get_wrappers()); // Выводит информацию об обёртках потока.
+
+$mysqli = mysqli_connect('localhost', 'root', '', test) // Специальная функция. Подключение к базе данных. (адрес, пользователь, пароль, название базы данных)
+
+$query = mysqli_query($mysqli, "SELECT * FROM test.testTable") //создаём запрос к базе данных. (подключение, база данных.таблица);
+ 
+//В ответ мы получили объёкт. Чтобы обработать объект и переделать в массив делаем:
+$employess = []; //Массив служащих (из примера урока)
+while ($row = mysqli_fetch_assoc($query) {
+	$emploes[] = $row; //Добавляем в массив новый элемент
+} //mysqli_fetch_assoc — Извлекает результирующий ряд в виде ассоциативного массива
+
+$mysqli_close($mysqli); // Закрываем подключение.
+
+// Теперь создаём конфигурации в папке config ------
+// Файл init.php
+function myDB_connect () {
+	$defaultConfig = require ROOT_DIR.'config/config.default.php'; //Вызываем конфиг по умолчанию из файла. Присваивается массив.
+	if (!file_exists(ROOT_DIR.'config/config.php')) {//Проверяем наличие файла
+		echo 'Создайте файл конфигурации';
+		$localConfig = [];
+	} else {
+		$localConfig = require ROOT_DIR.'config/config.php'; //если есть, то присваиваем массив конфигураций.
+	}
+	
+	$config = array_merge($defaultConfig, $localConfig);//Слияние массивов
+	
+	
+	$mysqli = mysqli_connect(
+		$config[db_host], //Этот массив хранится в файле
+		$config[db_user],
+		$config[db_pass],
+		$config[db_name]
+	);
+	return $mysqli;
+}
+myDB_connect();
+
+//Файл config.php
+
+return [
+	'db_user' => 'root',
+	'db_pass' => '',
+	'db_name' => 'test',
+	'db_host' => 'localhost',
+]
+//Файл config.default.php
+
+return [
+	'db_user' => 'root',
+	'db_pass' => '',
+	'db_name' => 'geekbrains',
+	'db_host' => 'localhost',
+]
+
+//Файл const.php
+define('ROOT_DIR', --DIR__.'/../');//Создаём константу ROOT_DIR, присваеваем с помощью глобальной переменной __DIR__ корневую папку.
+define('PUBLIC_DIR', __DIR__.'/../public/');//Папка public
+define('ENGINE_DIR', __DIR__.'/../engine/');
+?>
+<?php //Папка engine -------
+//Файл autoload.php
+function autoload($dir, $excludeFiles=[]) {//Параметры: каталог из которого будем подгружать, и исключения файлов, которые не нужны.
+	$files = scandir($dir);//Вытаскиваем файлы
+	$exclude = array_merge(['.','..'], $excludeFiles);//Создаём массив исключаемых (+корневые).
+	foreach ($files as $file) {
+		if (!in_array($file, $excludeFiles)) { //Проверяем, есть ли исключения в массиве
+			if (is_dir($dir.DIRECTORY_SEPARATOR.$file)){//Проверяем если это каталог
+				autoload($dir.DIRECTORY_SEPARATOR.$file, $excludeFiles);
+				//Если папка, то проверяем и её.(рекурсивно)
+			}
+			//Проверяем формат файла
+			if ("text/x-php" == mime_content_type($dir.DIRECTORY_SEPARATOR.$file)) {
+
+				require_once($dir.DIRECTORY_SEPARATOR.$file);//Подключаем файлы
+			}
+		}
+	}
+}
+
+//Файл lesson5
+$query = "SELECT * FROM geekbrains.students WHERE `age` < 30 ORDER BY age DESC;";
+
+$result = mysqli_query(myDB_connect(), $query);
+
+$employess = [];
+while ($row = mysqli_fetch_assoc($result)) {
+	$employess[] = $row;
+}
+?>
+//Папка public ------
+ //Папка public ------
+//Файл lesson5
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Имя</th>
+        <th scope="col">Возраст</th>
+        <th scope="col">Язык</th>
+    </tr>
+    </thead>
+    <tbody>
+		<?php foreach ($employess as $student): ?>
+        <tr> <!-- Отрисовываем массив -->
+            <th scope="row"><?= $student['id'] ?></th>
+            <td><?= $student['name'] ?></td>
+            <td><?= $student['age'] ?></td>
+            <td><?= $student['lang'] ?></td>
+        </tr>
+		<?php endforeach ?>
+    </tbody>
+</table>
+
+//Корневая папка --------
+<?php //Корневая папка --------
+include 'engine/autoload.php'; //Подключаем файл
+autoload('config');
+
+include ENGINE_DIR.'lesson5.php';
+include PUBLIC_DIR.'header.php';
+include PUBLIC_DIR.'lesson5.php';
+include PUBLIC_DIR.'footer.php';
+
+?>
+
+<!-------Методичка------->
+Создание базы данных: 
+
+CREATE TABLE employee( 
+id_employee int   ( 11 )  NOT NULL AUTO_INCREMENT, 
+first_name varchar ( 255 )  NULL DEFAULT '', 
+middle_name varchar ( 255 )  NULL DEFAULT '', 
+last_name varchar ( 255 )  NULL DEFAULT '', 
+PRIMARY KEY ( `id_employee`) 
+);
+
+Добавляем данные: 
+INSERT INTO employee ( first_name ,  middle_name ,  last_name )  VALUES ( 'testuser' ,   'test' ,   'test' );
+
+Меняем данные:
+UPDATE employee SET name = 'testuser1'  WHERE id_employee = 1; 
+DELETE FROM employee WHERE id_employee = 5; --Удаление
+
+Выбираем данные:
+SELECT *  FROM employee WHERE id >   0;
+
+<?php //Работа с БД средствами PHP
+Для подключения к базе в PHP существует специальная функция mysqli_connect.
+$link =  mysqli_connect ( "localhost" ,   "my_user" ,   "my_password" ,   "world" ); 
+//Открываем соединение
+
+$result =  mysqli_query ( "SELECT * FROM employee WHERE id > 0" ); //Запрос к БД
+//В переменную $result записываем значение ячеек выборки
+
+Для запросов, не   подразумевающих получение данных из базы (INSERT, UPDATE, DELETE), функция возвращает true , в случае успешного выполнения операции, и   false – в противном случае.
+$result =  mysqli_query ( "DELETE FROM employee WHERE id_employee = 5;" ); 
+//$result == true
+
+$epms =  array (); 
+while ( $row =  mysqli_fetch_assoc ( $result )) 
+   $epms []   =  $row; //Записываем результирующий массив.
+// mysqli_fetch_assoc извлекает очередную строку из выборки данных и возвращает её в переменную $row в виде ассоциативного массива. Ключами данного массива являются названия столбцов таблицы, а значениями – данные из конкретной строки.
+
+mysqli_close ( $link ); //Закрываем соединение
+?>
+
+
+
+
+
+
+Урок 6 -----------------------------------------------------------------------------------
+Коментарии к уроку:
+Трансляция начнется здесь -> https://youtu.be/EFzjS5iHEc0
+Интересные ссылки:
+Как работает PHP: http://phpfaq.ru/newbie/na_tanke
+Обработка чекбоксов в PHP: https://www.internet-technologies.ru/articles/obrabotka-chekboksov-v-php.html
+Разбор ДЗ №5 от коллеги:
+Разбор заданий к 5 уроку: https://youtu.be/bEEcMhrhgYc
+UPD: добавил запросы к БД
+
+Видеолекция.
+GET 
+
+
+<?php // index.php
+include 'engine/autoload.php';
+autoload('config'); //Сканируем папку config и включаем все файлы оттуда (include ...)
+
+include ENGINE_DIR . 'lesson5.php';
+?>
+<!-- engine/lesson6----------------->
+<button type="button" class="ml-3 mb-3 btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+	Добавить нового студента
+</button> 
+<!-- Добавляем кнопку добавления студента -->
+
+<!-- engine/search.php-------------->
+<?php
+print_r($_GET); //Просто выводим глобальный массив _GET
+$search = $_GET['search'] ?? NULL; //Если $_GET['search'] не пустая. search - параметр name элемента.
+$sort = $_GET['sort'] ?? NULL;
+$order = "";
+$searchBy = $_GET['searchBy'] ?? '';
+
+function getSearchBy($searchBy, $search) {// В каких полях БД ищем 
+	if (count($searchBy) == 1)
+		return "$searchBy[0] LIKE \"%$search%\""; // % означает любой один или несколько символов.
+
+		$getWhere = "";
+		foreach ($searchBy as $key => $value) {
+			if ($key == 0) {
+				$getWhere .= "$value LIKE \"%$search%\""; //Ищем строку из $search в столбце $value
+				continue;
+			}
+			$getWhere .= " OR $value LIKE \"%$search%\"";// Если параметр $searchBy не один.
+		}
+	return $getWhere;
+}
+
+// Присваиваем значение $order (часть запроса отвечающая за упорядочивание)
+switch ($sort) {
+	case 1 : //Присваиваем результат функции order c параметрами.
+		$order = order("id"); //Можно: $order = "ORDER BY id"
+		break;
+	case 2 :
+		$order = order("id", false); //Можно: $order = "ORDER BY id DESC"
+		break;
+	case 3 :
+		$order = order("name");
+		break;
+	case 4 :
+		$order = order("name", false);
+		break;
+	case 5 :
+		$order = order("age");
+		break;
+	case 6 :
+		$order = order("age", false);
+		break;
+}
+
+//Функция создающая часть SQL запроса на упорядочивание списка.
+function order($name, $sort = true) { 
+	if ($sort) 
+		return " ORDER BY students.{$name};"; //Если $sort не задана (ture)
+	return " ORDER BY students.{$name} DESC;"; //Если $sort = false
+}
+// {$name} Скобки экранируют переменную, чтобы рядом стоящие символы отделались от переменной
+
+$SQL_query = "SELECT * FROM geekbrains.students"; //Формируем первую часть строки запроса к базе данных.
+
+if ($search) { //Если search не пустая, то
+	$SQL_query .= " WHERE ".getSearchBy($searchBy, $search);
+	$SQL_query .= $order;
+
+}
+
+
+$result = mysqli_query(myDB_connect(), $SQL_query);
+
+$employess = [];
+while ($row = mysqli_fetch_assoc($result)) {
+	$employess[] = $row;
+}
+
+
+?>
+
+<!-- engine/modal.php -->
+<?php
+include './../engine/autoload.php';
+autoload('./../config');
+
+if ($_POST['age'] && $_POST['name'] && $_POST['lang'] ) {
+	$name = $_POST['name'];
+	$age = $_POST['age'];
+	$lang = $_POST['lang'];
+	//Проверяем есть ли запрос POST со всеми необходимыми переменными, и присваиваем есть есть.
+
+//Создаём запрос на добавление студента в базу данных
+$INSERT_query = sprintf("INSERT INTO geekbrains.students (name, age, lang) VALUES (\"%s\", \"%s\", \"%s\")", $name, $age, $lang); //sprintf — Возвращает отформатированную строку
+
+$insert_query = mysqli_query(myDB_connect(), $INSERT_query);
+//myDB_connect в файле config/init.php создаёт подключение к базе данных.
+}
+
+header('Location: /index.php');//Что-бы вернуться обратно на index.php
+//Не сработает, если html теги присутствуют до него.
+
+die; //Завершение скрипта.
+
+?>
+
+<?php
+include PUBLIC_DIR . 'header.php';
+include TEMPLATES_DIR . 'lesson6.php';
+include TEMPLATES_DIR . 'lesson5.php';
+?>
+
+<!-- templates/modal.php -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="/engine/modal.php" method="post">
+			<!-- action="/engine/modal.php" параметр запускающий содержимое modal.php-->
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Добавить нового студента</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <input name="name" type="text" class="m-3 form-control" placeholder="Имя пользователя" >
+                <input name="age" type="text" class="m-3 form-control" placeholder="Возраст студента">
+                <input name="lang" type="text" class="m-3 form-control" placeholder="Изучаемый язык" a>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button  class="btn btn-primary " type="submit">Добавить студента</button>
+
+            </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+include PUBLIC_DIR . 'footer.php';
+
+<!-- Файл templates/search.php -->
+<html>
+<form method="get"> <!-- Форма c отправкой методом GET -->
+    <label for="exampleFormControlSelect1">Введите запрос:</label>
+    <input name="search" class="m-3 form-control" type="text" placeholder="Search" value="<?=$search?>"> 
+	<!-- 
+	name="search" переменная в которую запишется содержимое
+	value="<?=$search?>" ставим значение переменной, для того, что-бы после поиска значение сохранялось 
+	-->
+    <label for="exampleFormControlSelect1">Где искать:</label>
+    <select name = "searchBy[]" class="ml-3 mb-3 form-control" multiple>
+        <option value="id">ID</option>
+        <option value="name">Name</option>
+        <option value="age">Age</option>
+        <option value="lang">Lang</option>
+    </select>
+	<!-- name = "searchBy[]" может присвоить несколько значения в  массив -->
+
+    <label for="exampleFormControlSelect1">Сортировать по:</label>
+    <select name = "sort" class="ml-3 mb-3 form-control" >
+        <option value="1">ID UP</option>
+        <option value="2">ID DOWN</option>
+        <option value="3">Name UP</option>
+        <option value="4">Name DOWN</option>
+        <option value="5">Age UP</option>
+        <option value="6">Age DOWN</option>
+    </select>
+	<!-- Выпадающий список для сортировки. Записываем value="..." в переменную sort -->
+
+    <button type="submit" class="btn btn-primary">Поиск!</button>
+</form>
+</html>
+
++
+
+POST
+
+Урок 7 -----------------------------------------------------------------------------------
+Коментарии к уроку:
+Трансляция -> https://youtu.be/W89Mp5FFEng
+Интересные ссылки.
+Важный материал про сессии: https://habr.com/ru/post/437972/
+Разбор пракического задания 6: https://youtu.be/xs3QwaJ72L4
+
+--Куки Cookie 
+<?php
+// Хранятся на браузере
+setcookie('isAuth', 'true', time()+60*60*24*14);//Отправляет cookie. имя, значение, время действия. time()-1 Удаляет куки.
+print_r($_COOKIE);// Выводим глобальный массив для проверки.
+
+if ($_COOKIE['isAuth']) { //проверка авторизации
+	echo 'Вы авторизованы!';
+}
+?>
+---Сессии
+<?php
+//Хранятся на сервере в файлах типа sess_*]
+session_start(); //Стартует новую сессию, либо возобновляет существующую
+
+$_SESSION['name'] = 'Foma';
+$_SESSION['age'] = '33';
+//В сессиях не хранится важная информация (пароли и т.д.)
+//Теперь в куки записалась информация о текущей сессии. Идентификатор.
+session_destroy();//Уничтожает все данные сессии без перезагрузки браузера. (выход из аккаунта)
+session_write_close();//Записывает данные сессии и завершает её.(данные сохраняются )
+
+
+session_start($options);//Открытие сессии с опциями
+?>
+---Хеширование
+<?php
+password_hash('password', 'PASSWORD_DEFAULT',$options);//Аргументы: 'Пароль', 'Алгоритм'
+//создает хеш пароля используя сильный, необратимый алгоритм хеширования.
+//PASSWORD_DEFAULT (PASSWORD_BCRYPT ), PASSWORD_ARGON2I , PASSWORD_ARGON2ID 
+//$options - Ассоциативный массив с опциями хеширования
+//https://bcrypt-generator.com/ онлайн генератор хеша.
+
+password_verify();//Проверяет, соответствует ли пароль хешу
+
+if (password_verify($password, $hash))//true, false
+	echo 'Пароль верный!';
+else
+	echo 'Пароль неверный';
+
+?>
+
+---Практика
+<?//Файлы login.php
+session_start(); //Открываем сессию
+
+$status = '';
+$login = '';
+$password = '';
+
+// начало файла auth_user.php
+function getUser($login) { //Получение данных пользователя
+
+$query_auth = sprintf('SELECT * FROM users WHERE login = "%s" LIMIT 1', $login); 
+//Формируем запрос к базе данных, чтобы $login текстом добавился к запросу.
+
+$mysql_auth = mysqli_query(myDB_connect(), $query_auth);//Делаем запрос. Функция из файла init.php
+
+$user = NULL;
+	$user= mysqli_fetch_assoc($mysql_auth);//Получаем данные
+if (!is_null($user))//Если user не NULL 
+	return $user;
+	return false;
+}// конец файла auth_user.php
+
+function safe($data) {//Проверка POST запроса на иньекции
+	return htmlspecialchars(strip_tags($data));
+	//strip_tags — Удаляет теги HTML и PHP из строки
+	//htmlspecialchars — Преобразует специальные символы в HTML-сущности
+	
+}
+if (isset($_POST['login']) && isset($_POST['password'])) {
+	//Проверяем заданны ли наши переменные запросом в массиве $_POST
+	$login = safe($_POST['login']);
+	$password = safe($_POST['password']);
+
+	$user = getUser($login);//Приваиваем пользователя, если есть.
+
+	if ($user) { //Проверяем, есть ли такой пользователь.
+		if(password_verify($password, $user['pass'])) {//Если проверка прошла
+				$_SESSION['isAuth'] = true;//Аутентификация true
+				$_SESSION['user_name'] = $user['login'];
+				// ключу сессии присваиваем имя пользователя. Сессия открыта для пользователя
+				header('location: /index.php');//Возвращаемся на страницу
+				die;
+		}
+		else {
+			$status = 'Пароль не верный! Проверьте данные и повторите снова';
+		}
+	}
+
+	else {
+		$status = 'Логин не верный! Проверьте данные и повторите снова';
+		$_SESSION['isAuth'] = false;// Авторизация не прошла
+	}
+}
+session_write_close();
+?>
+
+<!-- файл config/logout.php -->
+<?php
+if (isset($_POST['logout'])) {//Если значение logout не пустое
+	session_start();
+	session_destroy();
+	header('Location: '.$_SERVER['REQUEST_URI']);
+	die();
+}
+?>
+
+<!-- файл public/header.php -->
+<nav class="navbar navbar-dark bg-dark">
+      <?php if(!$_SESSION['isAuth']):?><!--Если аутентификация не пройдена-->
+    <div>
+          <span class="navbar-brand">Здравствуй, гость</span>
+          <a href="/templates/login.php" class="btn btn-success" role="button"
+             aria-pressed="true">Авторизация</a>
+      </div>
+    <?php else:?><!--Если аутентификация пройдена-->
+    <div>
+        <span class="navbar-brand">Вы авторизированы как <strong><?=$_SESSION['user_name']?></strong></span>
+        <form method="post">
+            <input class="btn btn-danger" type="submit" name = "logout" value="exit">
+        </form>
+      </div>
+    <?php endif;?>
+</nav>
+
+<!-- файл auth_check.php-->
+<?php
+if ($_SESSION['isAuth']): ?> <!--Если авторизированны...-->
+<h5 class="m-3 alert alert-success"> <!--Выводим...-->
+	Капитан <?=$_SESSION['user_name']?>, добро пожаловать на борт!
+</h5>
+<?else:?> <!--Если нет...-->
+<h5 class="m-3 alert alert-danger">
+	Доступ к контенту ограничен!
+	<a href="/templates/login.php">Войдите</a>, чтобы продолжить
+</h5>
+<?php die()?><!--Чтобы не подгружалось остальное, при отсутствии авторизации-->
+<?php endif;?>
+
+
+<!-- файл templates/login.php -->
+<form class="form-horizontal" method="post">
+	<span class="heading">АВТОРИЗАЦИЯ</span>
+	<div  class="form-group">
+		<input  name ="login" type="" class="form-control" id="inputEmail" placeholder="Login">
+		<i class="fa fa-user"></i>
+	</div>
+	<div  class="form-group help">
+		<input name = "password" type="password" class="form-control" id="inputPassword"
+									 placeholder="Password">
+		<i class="fa fa-lock"></i>
+		<a href="#" class="fa fa-question-circle"></a>
+	</div>
+	<div class="form-group">
+		<div class="main-checkbox">
+			<input  type="checkbox" value="none" id="checkbox1" name="check"/>
+			<label for="checkbox1"></label>
+		</div>
+		<span class="text">Запомнить</span>
+		<button type="submit" class="btn btn-default">ВХОД</button>
+	</div>
+</form>
+
+
+
+Урок 8 -----------------------------------------------------------------------------------
+Коментарии к уроку:

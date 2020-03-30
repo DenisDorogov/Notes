@@ -1,0 +1,64 @@
+--Подключение к серверу
+
+/*Команда соединения MySQL использует следующий синтаксис:
+
+mysql [host] [port] [username] [password] [database]
+Каждый из этих аргументов может быть передан команде mysql следующим образом:
+
+--host=host или -hhost
+--port=port или -P
+--username=username or -uusername
+--password=password or -ppassword
+база данных задается просто как строка (например db_name) */
+
+mysql -u root -p  --с использованием пользователя и запросом пароля
+mysql -u root -h 192.168.0.10 -P 3306 -p  --с данными сервера
+
+--Чтобы сделать дамп базы данных используется расширение mysqldump. Оно имеет следующий синтаксис:
+
+mysqldump [username] [password] [database name] > [dump file]
+
+--Следующий код логируется в сеанс MySQL с учетной записью пользователя root с паролем secret, затем он выгружает таблицу db_world в файл db_worldbak.sql.
+
+mysqldump -uroot -psecret db_world > db_worldbak.sql
+
+
+-- Создаём базу данных --
+
+
+show databases; -- смотрим базы данных.
+CREATE SCHEMA -- Создаём базу данных.
+USE shop; --работаем с базой shop.
+SHOW TABLES; --смотрим какие таблицы существуют. 
+ALTER TABLE category; --редактируем таблицу
+ADD COLUMN alias_name varchar(128) null after discount; --добавляем столбец
+show columns category;   --смотрим таблицу
+show columns from category;   --смотрим таблицу c описанием
+
+
+SCHEMA --База(Схема).
+
+SHOW DATABASES; -- смотрим базы данных 
+CREATE SCHEMA -- Создаём базу данных.
+CREATE SCHEMA 'shop' DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+USE shop; --работаем с базой shop.
+DROP SCHEMA 'shop';
+
+TABLE --Таблица
+
+SHOW TABLES; --смотрим какие таблицы существуют. 
+SELECT * FROM shop.category; -- Выбираем все данные из 
+SELECT * FROM shop; 
+SELECT * FROM shop\G --выведет не в таблице а по строчно
+
+
+
+
+ALTER TABLE category; --редактируем таблицу
+
+
+CREATE TABLE users (
+	id SERIAL PRIMARY KEY, 
+);
+--#SERIAL псевдоним конструкции: BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE
+

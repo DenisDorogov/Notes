@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Shop</title>
+</head>
+
+<body>
+  <div id="app">
+    <header>
+       <search @search="handleSearchClick"></search>
+       <button class="cart-button">Корзина</button>
+    </header>
+    <main>
+      <cart :cart="cart" @delete="handleDeleteClick"></cart>
+      <products :query="filterValue" @onbuy="handleBuyClick"></products>
+    </main>
+    <fake v-if="isFakeVisible"></fake>
+    <button @click="handleButtonClick">Click</button>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
+<!--  <script src="app.js"></script>-->
+  <script>
+    const API_URL = 'http://localhost:3000';
+    
+    Vue.component('search', {
+      template: `
+          <div :style="{ backgroundImage: backgroundImage }">
+          <input type="text" v-model="searchQuery" class="search-text" />
+          <button class="search-button" @click="handleSearchClick">Поиск</button>
+          </div>
+          `, // Шаблон
+      data() {
+        return {
+          searchQuery: '',
+          image: 'https://i.ytimg.com/vi/M-XtB0R3ri4/maxresdefault.jpg',
+        }
+      },
+      computed: {
+        backgroundImage() { return `url(${this.image})`; }
+      },
+      methods: {
+        handleSearchClick() {
+          this.$emit('search', this.searchQuery); // Событие search, передаём туда
+        }
+      }
+    });
+
+    Vue.component('product-item', { // Создаём компонент с html тегом 'product-item'
+      props: ['item'], // Свойство компонента. Могут использоваться также внутри html
+      template: ` 
+        <div class="item">
+          <h2>{{item.name}}</h2>
+          <span>{{item.price}}</span>
+          <button @click.prevent="handleBuyClick(item)">Buy</button>
+        </div>
+      `, // Разметка, которую рисует компонент В шаблоне только один корневой элемент(<div>)
+      methods: {
+        handleBuyClick(item) {
+          this.$emit('onbuy', item);
+          // Метод, который обрабатывает событие onBuy, и получаем item 
+        }
+      }
+    });
+
+      Vue.component('products', {
+        props: ['query'], //Список или хэш входных параметров, по которым разрешено получение данных из родительского компонента. Это как параметр функции.
+        methods: {
+          handleBuyClick(item) {
+            this.$emit('onbuy', item);
+          },
+        },
+        data() { // Функция, которая должна возвращать значение.
+          return {
+            items: [], // Также используется для хранения данных (переменных)
+          };
+        },
+        computed: {
+          filteredItems() {
+            if(this.query) {
+              const regexp = new RegExp(this.query, 'i');
+              return this.items.filter((item) => regexp.test(item.name));
+            } else {
+              return this.items;
+            }
+          }
+        },
+        mounted() { 
+          fetch(`${API_URL}/products`) //Загружаем список товаров.
+            .then(response => response.json())
+            .then((items) => {
+              this.items = items;
+            });
+        },
+        template: `
+          <div class="goods">
+            <product-item v-for="entry in filteredItems" :item="entry" @onbuy="handleBuyClick"></product-item>
+          </div>  <!-- Корневой элемент, в котором будут товары(обязательно)-->
+        `,// Отрисовка списка товаров
+        // Создаём собственное onBuy событие для данного компонента.
+        //:item="entry" передаём переменную item в компонент product-item
+      });
+
+const app = new Vue({
+  el: '#app',
+  data: {
+    filterValue: '',
+    cart: [],
+    firstName: 'Ivan',
+    lastName: 'Petrov',
+  },
+  mounted() {
+    fetch(`${API_URL}/cart`)
+      .then(response => response.json())
+      .then((items) => {
+        this.cart = items;
+      });
+  },
+  computed: {
+    total() {
+      return this.cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    }
+  },
+  methods: {
+    handleDeleteClick(item) {
+      if (item.quantity > 1) {
+        fetch(`${API_URL}/cart/${item.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ quantity: item.quantity - 1 }),
+        })
+          .then((response) => response.json())
+          .then((item) => {
+            const itemIdx = this.cart.findIndex((entry) => entry.id === item.id);
+            Vue.set(this.cart, itemIdx, item);
+          });
+      } else {
+        fetch(`${API_URL}/cart/${item.id}`, {
+          method: 'DELETE',
+        })
+          .then(() => {
+            this.cart = this.cart.filter((cartItem) => cartItem.id !== item.id);
+          });
+      }
+    }, 
+    handleSearchClick(query) { //Когда пользователь нажимает "поиск", срабатывает метод
+      this.filterValue = query;//Меняем входные данные
+    },
+    handleBuyClick(item) {
+      const cartItem = this.cart.find((entry) => entry.id === item.id);
+      if (cartItem) {
+        // товар в корзине уже есть, нужно увеличить количество
+        fetch(`${API_URL}/cart/${item.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ quantity: cartItem.quantity + 1 }),
+        })
+          .then((response) => response.json())
+          .then((item) => {
+            const itemIdx = this.cart.findIndex((entry) => entry.id === item.id);
+            Vue.set(this.cart, itemIdx, item);
+          });
+      } else {
+        // товара в корзине еще нет, нужно добавить
+        fetch(`${API_URL}/cart`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ ...item, quantity: 1 })
+        })
+          .then((response) => response.json())
+          .then((item) => {
+            this.cart.push(item);
+          });
+      }
+    }
+  }
+});  
+  </script>
+</body>
+
+</html>

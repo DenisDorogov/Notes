@@ -1,0 +1,2661 @@
+Базы данных
+
+Урок 1. Установка окружения. DDL - команды ----------------------------------------------
+--Важное объявление!
+/*
+--Уважаемые слушатели!
+
+--На первом уроке, преподаватель покажет Вам как верно установить ПО, рекомендуем до первого занятия самостоятельно ничего не устанавливать.
+
+Во вложении вы найдете дополнительную информацию:
+- Как установить MySQL
+- Как установить MySQL
+- Если возникли сложности при установке, можете воспользоваться виртуальной машиной, во вложении ссылка на видео и описание.
+- Инструкция по сдачи практического задания на Git.
+
+Если сложности при установки возникли обращайтесь к преподавателю / наставнику / пишите в общий чат.
+
+Обратите внимание, что программа курса идёт под версию 5.7. Новые функции в версии 8 нам пока не понадобятся, но можете установить и последнюю версию.
+--Полезные ссылки:
+--Домашнее задание:
+
+0:23 - Как сдавать ДЗ
+1:25 - Горячие клавиши DBeaver
+
+*/
+
+--Тема реляционных баз данных
+--Нормальные формы данных (1NF, 2NF, 3NF, NFBC)
+
+--Среды работы с mysql:
+MySQL Workbench
+DBeaver
+phpMyAdmin
+JetBrains DataGrip
+JetBrains pyCharm
+
+--Запускаем mysql в терминале.
+mysql -u root -p   -- -u root(Зайти под пользователем root), -p (использовать пароль)
+exit --выйти
+
+--на новом сервере буду базы:
+information_schema
+perfomance_schema
+sys
+-- их лучше не трогать.
+
+show databases; --показать имеющиеся базы данных
+CREATE database gb; -- создать новую базу
+
+USE gb; -- работаем с базой gb
+
+CREATE TABLE courses( -- создаём таблицу
+	id INT auto_increment NOT NULL PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+CREATE TABLE students (
+id INT auto_increment NOT NULL PRIMARY KEY,
+firstname VARCHAR(100) NOT NULL,
+LASTNAME VARCHAR(100) NOT NULL,
+email VARCHAR(100) NOT NULL UNIQUE,
+course_id INT
+);
+
+ALTER TABLE students ADD COLUMN birthday date; -- добавить
+ALTER TABLE students RENAME COLUMN data_of_birth; -- изменить название
+ALTER TABLE students DROP COLUMN data_of_birth; -- удалить
+
+INSERT INTO courses (name) VALUES ("Databases"), ("Linux"), ("BigDATA"); -- вставили данные в колонку name
+SELECT * FROMcourses; -- посмотреть содержимое таблицы courses
+DELETE FROM courses WHERE id = 1; -- Удалить запись (строчку)
+DELETE FROM courses WHERE "courses"."id" = 1;
+
+INSERT INTO students (firstname, lastname, email, course_id) 
+VALUES 
+("Pavel", "Durov", "durov@vk.com", "1"),
+("Bill", "Gates", "billy@microsoft", "2"),
+("Ivan", "Grozny", "vanyaIV@rus.ru", "3"),
+("Olga", "Buzova", "megastar@yandex.ru", "1")
+; --Заполняем значениями поля
+
+UPDATE students 
+SET email = "superrr@rambler.ru" WHERE lastname = "Buzova"; -- меняем значение поля
+
+DELETE FROM students; -- !!! Удаляет все записи таблицы
+DELETE FROM students WHERE lastname = "Buzova"; --удаляет конкретную запись (строку)
+
+
+
+
+_________________________________________________________________________________________
+
+--Урок 2. Управление БД. Язык запросов SQL-----------------------------------------------
+/*--Важное объявление!
+--Полезные ссылки:
+--Домашнее задание:
+Практическое задание по теме “Управление БД”
+- Установите СУБД MySQL. Создайте в домашней директории файл .my.cnf, задав в нем логин и пароль, который указывался при установке.
+- Создайте базу данных example, разместите в ней таблицу users, состоящую из двух столбцов, числового id и строкового name.
+- Создайте дамп базы данных example из предыдущего задания, разверните содержимое дампа в новую базу данных sample.
+- (по желанию) Ознакомьтесь более подробно с документацией утилиты mysqldump. Создайте дамп единственной таблицы help_keyword базы данных mysql. Причем добейтесь того, чтобы дамп содержал только первые 100 строк таблицы.
+*/
+/*Комментарий к домашнему заданию 2:
+Для информации: допустимые расположения файла my.cnf (или my.ini для Windows) описаны на странице официальной документации: https://dev.mysql.com/doc/refman/8.0/en/option-files.html
+
+В качестве поля id в таблицах удобно использовать псевдо тип SERIAL (псевдоним для типа BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE).
+
+Небольшая русскоязычная шпаргалка по утилите mysqldump: https://mysqlru.com/mysql-database-administration/client-side-scripts/mysqldump.html.
+
+*/
+
+-- 0:40 - создание .my.cnf
+
+/*
+Реляционные СУБД
+Комерческие:						Свободные:
+Oracle								MySQL
+MS SQL -- от microsoft				PostgreSQL
+DB2 -- от IBM						Firebird
+
+Популярность можно посмотреть здесь: www.db-engines.com
+
+NoSQL базы банных:
+-Redis - очень быстрое
+-MongoDB - 
+-ElasticSearch
+-ClickHouse - колоночная
+-Cassandra
+
+CAP - теорема
+MySQL, PostgreSQL - AC (Availibility, Consisdency)(Доступность, Согласованность);
+Cassandra, Riak - AP (Availibility, Partition tolerance)(Доступность, Устойчивость к разделению);
+Redis, MongoDB - CP (Consistency, Partition tolerance)(Согласованность, Устойчивость к разделению);
+
+Шардирование - разбиение базы на части (шарды) для улучшения производительности.
+*/
+
+SELECT "Hello world!"; -- Выводит на экран табличку Hello world!
+
+--подключение
+mysql -u root -h 192.168.0.10 -P 3306 -p
+
+STATUS -- или \s Статус сервера
+
+SYSTEM ls -- или \! выполняем системную команду //TODO проверить на linux
+SYSTEM dir -- в windows
+
+SOURCE hello.sql  -- или \. Выполнение файла из корневой папки (В моём Open Server == W: )
+
+
+--Создаём файл .my.cnf для предварительной настройки подключения 
+[mysql]
+user=root
+password=
+
+chmod 0600 ~/.my.cnf  --команда наздачения прав доступа для позьзователя (что-бы ограничить доступ другим)
+
+
+--SQL DUMP Дамп базы данных
+--Это текстовый файл позволяющий воссоздать текущую базу данных на другом сервере
+--для этого необходимо изменить секцию .my.cnf
+[client]
+user=root
+password=
+
+--В терминале:
+mysqldump mysql > mysql.sql --направляем вывод дампа в файл mysql.sql
+
+mysql mysql < hello.sql --разворачиваем дамп из файла hello.sql
+
+
+--Управление базами данных
+Ctrl+l -- быстрая очистка экрана
+
+CREATE DATABASE shop; --Создаём базу данных
+CREATE DATABASE IF NOT EXISTS shop; -- лучше сразу проверять наличие подобного имени.
+SHOW DATABASES; --Смотрим список доступных баз данных
+SHOW VARIABLES LIKE 'datadir'; --показывает каталог с базами данных
+
+/*В каталоге много файлов и папки с именами баз данных.
+Внутри файлы:
+db.opt - сведения о кодировке базы данных
+скопировав и переименовав каталог с базой, мы получим новую рабочую базу данных.
+*/
+DROP DATABASE shop; --удаление базы данных;
+DROP DATABASE IF NOT EXISTS shop; --если существует
+--В windows регистр имени базы данных не имеет значения.
+
+USE shop --выбрать базу данных (можно без ; т.к. это команда клиента)
+SHOW TABLES; --показать таблицы
+SHOW TABLES FROM shop; --из любой базы
+SELECT mysql.User.User, mysql.User.Host FROM mysql.User; --выводим таблицу из
+-- таблицы User базы mysql данные столбцов User и Host 
+--(полные имена - квалифицированные имена)
+
+mysql shop; --запускаем mysql сразу на таблице shop
+
+CREATE TABLE users; --создать таблицу в текущей БД
+CREATE TABLE IF NOT EXISTS users; --можно
+--непобходимо применять такие конструкции, т.к. ошибка при выполнении пакетного файла приведёт к остановке всего пакетного файла.
+
+DESCRIBE users; --просмотр структуры таблицы
+--можно фильтровать вывод:
+DESCRIBE user 'm%'; --аналогично m* выведет все столбцы, названия которых начинаются с 'm'
+
+--Встроенные базы данных в mysql
+mysql -- системная
+information_schema --виртуальная (в оперативной памяти)(только SELECT)
+perfomance_schema
+
+SELECT * FROM information_schema.SCHEMATA; 
+-- запрос список всех баз данных из information_schema
+
+SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'shop';
+--извлечь список таблиц базы данных shop
+SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'shop'\G;--вертикальный вывод
+
+HELP DESCRIBE -- получение справки прям в консоли.
+--Онлайн документация: dev.mysql.com/doc   MySQL Server Reference Manual
+
+-- Стандарт SQL --
+/*
+-- Достоинства
+- Декларативный язык
+- Высокоуровневый язык напоминающий естественный язык человека
+- Высокая эффективность обработки множеств
+- Независимость от конкретных СУБД
+- Межплатформенная переносимость
+- Наличие стандартов
+
+-- Недостатки
+- Слабоструктурированный язык
+- Язык старый
+- Плохо взаимодействует с ООП-языками
+- SQL - не универсальный язык
+- Множество диалектов (Например SHOW DESCRIBE характерны только для MySQL)
+*/
+
+--Описание данных DDL
+--Управление данными DML
+
+-- Комментарии
+-- Однострочный коментарий
+/*
+Многострочный комментарий
+*/
+
+--Ключевые слова
+--Кавычки и их использование
+SELECT 'Rubyst\'s word'; -- Экранируем \ кавычку внутри строки
+SELECT "Rubyst\'s word"; -- Можно двойными, не не желательно.
+CREATE TABLE tbl (create INT); --не сработает, т.к. имя таблицы собпадает с ключ. сл.
+CREATE TABLE tbl (`create` INT); -- так правильно
+
+---< Типы данных >---
+
+BIT = --0 или 1 -- почитать
+
+-- Целые
+INT          = -2 147 883 648 --> 2 147 883 647 (2^31)
+INT UNSIGNED =              0 --> 4 294 967 295 (2^32) 
+-- UNSIGNED = неподписанный (без информации о знаке)
+
+TINYINT   = 1 байт;
+SMALLINT  = 2 байт;
+MEDIUMINT = 3 байт;
+INT       = 4 байт;
+BIGINT    = 8 байт;
+
+CREATE TABLE tbl (id INT(8)); -- 8 - кол-во символов. Выводит пробелы вместо пустых разрядов
+CREATE TABLE tbl (id INT(8) ZEROFILL); --пробелы будут нулями
+
+-- Вещественные числа
+
+FLOAT = 4 байт; 
+DOUBLE = 8 байт;
+
+DECLIMAL = 8 байт -- Число в виде строки
+DECIMAL(7,4) --Объявляем число с общим разм. 7 байт, а дробная часть 4 байта. (999.9999)
+ 
+-- Строковые типы
+
+CHAR    -- Фиксированные
+VARCHAR -- Переменный размер. под него резервируется 65536 символов
+
+TINYTEXT   -- 1 байт; 2^8         256
+TEXT       -- 2 байт; 2^16      65536(64кб)
+MEDIUMTEXT -- 3 байт; 2^24   16777216(16Мб)
+LONGTEXT   -- 4 байт; 2^32 4294967295(4Гб)
+
+--типы TEXT и BLOB ещё медленней VARCHAR
+
+CREATE TABLE tbl (
+	name CHAR(10) DEFAULT 'anonimus', -- размер 10 символов, по умолчанию будет 'ano...'
+	description VARCHAR(255),
+);
+INSERT INTO tbl VALUES (DEFAULT, 'Новый пользователь');
+-- name = 'anonimus', description = 'Новый пользователь'
+
+
+
+--Пример создания базы данных с урока
+--TODO изучить:
+DROP TABLE IF EXISTS catalogs;
+CREATE TABLE catalogs (
+  id SERIAL PRIMARY KEY, 
+  --SERIAL - это псевдоним для BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE.
+  name VARCHAR(255) COMMENT 'Название раздела',
+  UNIQUE unique_name(name(10))
+) COMMENT = 'Разделы интернет-магазина';
+
+INSERT INTO catalogs VALUES
+  (DEFAULT, 'Процессоры'),
+  (DEFAULT, 'Мат.платы'),
+  (DEFAULT, 'Видеокарты');
+  
+DROP TABLE IF EXISTS cat;
+CREATE TABLE cat (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255)
+);
+
+INSERT INTO
+  cat
+SELECT
+  *
+FROM
+  catalogs;
+SELECT * FROM cat;
+
+DROP TABLE IF EXISTS users;
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) COMMENT 'Имя покупателя',
+  birthday_at DATE COMMENT 'Дата рождения',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) COMMENT = 'Покупатели';
+
+DROP TABLE IF EXISTS products;
+CREATE TABLE products (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) COMMENT 'Название',
+  desription TEXT COMMENT 'Описание',
+  price DECIMAL (11,2) COMMENT 'Цена',
+  catalog_id INT UNSIGNED,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY index_of_catalog_id (catalog_id)
+) COMMENT = 'Товарные позиции';
+
+DROP TABLE IF EXISTS orders;
+CREATE TABLE orders (
+  id SERIAL PRIMARY KEY,
+  user_id INT UNSIGNED,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY index_of_user_id(user_id)
+) COMMENT = 'Заказы';
+
+DROP TABLE IF EXISTS orders_products; --таблица связи заказов с товаром
+CREATE TABLE orders_products (
+  id SERIAL PRIMARY KEY,
+  order_id INT UNSIGNED,
+  product_id INT UNSIGNED,
+  total INT UNSIGNED DEFAULT 1 COMMENT 'Количество заказанных товарных позиций',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) COMMENT = 'Состав заказа';
+
+DROP TABLE IF EXISTS discounts;
+CREATE TABLE discounts (
+  id SERIAL PRIMARY KEY,
+  user_id INT UNSIGNED,
+  product_id INT UNSIGNED,
+  discount FLOAT UNSIGNED COMMENT 'Величина скидки от 0.0 до 1.0',
+  started_at DATETIME,
+  finished_at DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY index_of_user_id(user_id),
+  KEY index_of_product_id(product_id)
+) COMMENT = 'Скидки';
+
+DROP TABLE IF EXISTS storehouses;
+CREATE TABLE storehouses (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) COMMENT 'Название',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) COMMENT = 'Склады';
+
+DROP TABLE IF EXISTS storehouses_products;
+CREATE TABLE storehouses_products (
+  id SERIAL PRIMARY KEY,
+  storehouse_id INT UNSIGNED,
+  product_id INT UNSIGNED,
+  VALUE INT UNSIGNED COMMENT 'Запас товарной позиции на складе',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) COMMENT = 'Запасы на складе';
+
+
+-- Календарные типы и множества --
+
+-- Значение NULL
+
+CREATE TABLE tbl (id INT UNSIGNED);
+INSERT INTO tbl VALUES(); -- на выходе получаем NULL значения
++------+
+| id   |
++------+
+| NULL |
++------+
+ALTER TABLE tbl CHANGE id id INT UNSIGNED NOT NULL; --меняем столбец id
+-- будет ошибка, т.к. уже есть столбец с даннными NULL
+TRUNCATE tbl; --Эта операция удаляет и воссоздает таблицу, что намного быстрее, чем поочередное удаление строк. (очистка таблицы)
+ALTER TABLE tbl CHANGE id id INT UNSIGNED NOT NULL; -- повторяем запрос
+-- теперь невозможно вставить пустое значение
+
+-- Календарные типы:
+TIME      3б 00:00:00
+DATE      3б 0000-00-00
+DATETIME  8б 0000-00-00 00:00:00
+TIMESTAMP 4б 0000-00-00 00:00:00 --занимает в два раза меньше места но от 1970 до 2038
+YEAR      1б 0000
+
+SELECT '2020-13-03 00:00:00';
+SELECT '2020-13-03 00:00:00' - INTERVAL 1 DAY ; -- минус 1 день
+--YEAR, MONTH, WEEK, DAY, HOUR, MINUTE, SECOND
+SELECT '2020-13-03 00:00:00' + INTERVAL '1-1' YEAR_MONTH; -- + год и месяц
+
+-- ENUM (перечисление) - это столбец, который может принимать значение из списка допустимых значений, явно перечисленных в спецификации столбца в момент создания таблицы.
+--Т.е. хранит в себе лишь числовой индекс, но выводит соответствующее значение.
+CREATE TABLE shirts (
+    name VARCHAR(40),
+    size ENUM('x-small', 'small', 'medium', 'large', 'x-large')
+);
+INSERT INTO shirts (name, size) VALUES ('dress shirt','large'), ('t-shirt','medium'),
+  ('polo shirt','small');
+SELECT name, size FROM shirts WHERE size = 'medium';
++---------+--------+
+| name    | size   |
++---------+--------+
+| t-shirt | medium |
++---------+--------+
+UPDATE shirts SET size = 'small' WHERE size = 'large';
+
+-- SET - то же  что и ENUM но может хранить в ячейке несколько значений.
+
+-- JSON тип
+
+-- добавим столбец типа JSON:
+ALTER TABLE tbl ADD collect JSON;
+-- Помещаем json данные в первую строку:
+INSERT INTO tbl VALUES (1, '{"first":"Hello", "second":"World"}');
+-- Извлекаем даннные с конкретным ключом:
+SELECT collect->>"$.second" FROM tbl;
+
+
+-- Изменение структуры таблицы при помощи ALTER TABLE
+
+1:26
+
+_________________________________________________________________________________________
+
+-- Урок 3.  Введение в проектирование БД-------------------------------------------------
+-- Важное объявление!
+-- Полезные ссылки:
+/* Домашнее задание: 
+Практическое задание по теме “Введение в проектирование БД”
+Написать крипт, добавляющий в БД vk, которую создали на занятии, 3 новые таблицы (с перечнем полей, указанием индексов и внешних ключей)*/
+
+
+--Начинаем делать учебный проект - социальная сеть.
+
+DROP DATABASE IF EXISTS vk; -- удаляем если уже есть
+CREATE DATABASE vk;
+USE vk;
+
+DROP TABLE IF EXISTS users;
+CREATE TABLE users (
+	id SERIAL PRIMARY KEY, -- SERIAL = BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE
+    firstname VARCHAR(50),
+    lastname VARCHAR(50) COMMENT 'Фамилия', -- COMMENT на случай, если имя неочевидное
+    email VARCHAR(120) UNIQUE,
+    phone BIGINT, --номер телефона довольно большое число
+    INDEX users_phone_idx(phone),-- имя_индекса(что индексируем)
+    INDEX users_firstname_lastname_idx(firstname, lastname) -- как выбирать индексы?
+	--если данные в столбце часто меняются, то лучше не применять.
+);
+
+--Связь с таблицей users 1 к 1
+DROP TABLE IF EXISTS `profiles`;
+CREATE TABLE `profiles` ( --Здесь данные которые запрашиваются реже.
+	user_id SERIAL PRIMARY KEY,
+    gender CHAR(1),
+    birthday DATE,
+	photo_id BIGINT UNSIGNED NULL,
+    created_at DATETIME DEFAULT NOW(), --NOW() возвращает текущее время 
+    hometown VARCHAR(100),
+    FOREIGN KEY (user_id) REFERENCES users(id) -- внешний ключ ссылается на users.id
+    	ON UPDATE CASCADE -- поведение по умолчанию при обновлении записи в главной таблице
+    	ON DELETE restrict -- поведение по умолчанию при удалении записи в главной таблице
+    -- , FOREIGN KEY (photo_id) REFERENCES media(id) -- пока рано, т.к. таблицы media еще нет
+);
+/* 
+-CASCADE: автоматически удаляет или изменяет строки из зависимой таблицы при удалении или изменении связанных строк в главной таблице.
+-SET NULL: при удалении или обновлении связанной строки из главной таблицы устанавливает для столбца внешнего ключа значение NULL.
+-RESTRICT: отклоняет удаление или изменение строк в главной таблице при наличии связанных строк в зависимой таблице.
+-NO ACTION: то же самое, что и RESTRICT.
+-SET DEFAULT: при удалении связанной строки из главной таблицы устанавливает для столбца внешнего ключа значение по у	молчанию, которое задается с помощью атрибуты DEFAULT.
+*/
+
+--ALTER TABLE vk.profiles ADD CONSTRAINT profiles_vk FOREIGN KEY (user_id) REFERENCES vk.users(id); можно таким способом добавить FOREIGN KEY
+--ADD CONSTRAINT - добавить ограничения.
+
+-- Связь 1 к М
+DROP TABLE IF EXISTS messages;
+CREATE TABLE messages (
+	id SERIAL PRIMARY KEY,
+	from_user_id BIGINT UNSIGNED NOT NULL,
+    to_user_id BIGINT UNSIGNED NOT NULL,
+    body TEXT,
+    created_at DATETIME DEFAULT NOW(), -- можно будет даже не упоминать это поле при вставке
+    INDEX messages_from_user_id (from_user_id),
+    INDEX messages_to_user_id (to_user_id),
+    FOREIGN KEY (from_user_id) REFERENCES users(id),
+    FOREIGN KEY (to_user_id) REFERENCES users(id)
+);
+
+--отношения между пользователями
+DROP TABLE IF EXISTS `friend_requests`; -- обратные кавычки можно использовать, чтобы не попать на зарезервированные слова.
+CREATE TABLE friend_requests (
+	-- id SERIAL PRIMARY KEY, -- изменили на составной ключ ниже: PRIMARY KEY(initiator_user_id, target_user_id)
+	initiator_user_id BIGINT UNSIGNED NOT NULL, --кто отправил запрос в друзья
+    target_user_id BIGINT UNSIGNED NOT NULL, --кому отправил запрос в друзья.
+    -- `status` TINYINT UNSIGNED,
+    status ENUM('requested', 'approved', 'unfriended', 'declined'),
+	--'запрошен', 'подтверждён', 'удалён из друзей', 'отменён'
+    -- `status` TINYINT UNSIGNED, -- в этом случае в коде хранили бы цифирный enum (0, 1, 2, 3...)
+	requested_at DATETIME DEFAULT NOW(),
+	confirmed_at DATETIME,
+	created_at DATETIME default NOW();
+	updated_at DATETIME ON UPDATE NOW(); -- current_timestamp = now()
+	
+	
+    PRIMARY KEY (initiator_user_id, target_user_id),
+	INDEX (initiator_user_id),
+    INDEX (target_user_id),
+    FOREIGN KEY (initiator_user_id) REFERENCES users(id),
+    FOREIGN KEY (target_user_id) REFERENCES users(id)
+);
+
+-- Связь М к М
+DROP TABLE IF EXISTS communities;
+CREATE TABLE communities( -- сообщества, группы
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(100),
+
+	INDEX communities_name_idx(name)
+);
+
+DROP TABLE IF EXISTS users_communities;
+CREATE TABLE users_communities( --соотношения пользователей и сообществ
+	user_id BIGINT UNSIGNED NOT NULL,
+	community_id BIGINT UNSIGNED NOT NULL,
+  
+	PRIMARY KEY (user_id, community_id), -- чтобы не было 2 записей о пользователе и сообществе
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (community_id) REFERENCES communities(id)
+);
+
+DROP TABLE IF EXISTS media_types;
+CREATE TABLE media_types(
+	id SERIAL PRIMARY KEY,
+    name VARCHAR(255),
+    created_at DATETIME DEFAULT NOW(),
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
+    -- записей мало, поэтому индекс будет лишним (замедлит работу)!
+);
+
+DROP TABLE IF EXISTS media;
+CREATE TABLE media(
+	id SERIAL PRIMARY KEY,
+    media_type_id BIGINT UNSIGNED NOT NULL,
+    user_id BIGINT UNSIGNED NOT NULL,
+  	body text,
+    filename VARCHAR(255), --или file BLOB (файл целиком в таблице. Не рекомендуется)
+    `size` INT,
+	metadata JSON, --метаданные в формате JSON
+    created_at DATETIME DEFAULT NOW(),
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX (user_id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (media_type_id) REFERENCES media_types(id)
+);
+
+DROP TABLE IF EXISTS likes;
+CREATE TABLE likes( --табличка с лайками 
+	id SERIAL PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    media_id BIGINT UNSIGNED NOT NULL,
+    created_at DATETIME DEFAULT NOW()
+
+    -- PRIMARY KEY (user_id, media_id) – можно было и так вместо id в качестве PK
+  	-- слишком увлекаться индексами тоже опасно, рациональнее их добавлять по мере необходимости (напр., провисают по времени какие-то запросы)  
+
+/* намеренно забыли, чтобы позднее увидеть их отсутствие в ER-диаграмме
+    , FOREIGN KEY (user_id) REFERENCES users(id)
+    , FOREIGN KEY (media_id) REFERENCES media(id)
+*/
+);
+
+DROP TABLE IF EXISTS `photo_albums`;
+CREATE TABLE `photo_albums` (
+	`id` SERIAL,
+	`name` varchar(255) DEFAULT NULL,
+    `user_id` BIGINT UNSIGNED DEFAULT NULL,
+
+    FOREIGN KEY (user_id) REFERENCES users(id),
+  	PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS `photos`; 
+CREATE TABLE `photos` (
+	id SERIAL PRIMARY KEY,
+	`album_id` BIGINT unsigned NOT NULL,
+	`media_id` BIGINT unsigned NOT NULL,
+
+	FOREIGN KEY (album_id) REFERENCES photo_albums(id),
+    FOREIGN KEY (media_id) REFERENCES media(id)
+);
+
+/*ER диаграмма. entity-relationship это блок-схемы, которые иллюстрируют, как «сущности» (люди, объекты или концепции) относятся друг к другу в системе.*/________________________________________________________________________
+
+Урок 4. CRUD-операции--------------------------------------------------------------------
+/*
+Важное объявление!
+Полезные ссылки:
+Официальные документации:
+Insert
+EN: https://dev.mysql.com/doc/refman/8.0/en/INSERT.html
+RU: http://www.mysql.ru/docs/man/INSERT.html
+
+Select
+EN: https://dev.mysql.com/doc/refman/8.0/en/SELECT.html
+RU: http://www.mysql.ru/docs/man/SELECT.html
+
+Update
+EN: https://dev.mysql.com/doc/refman/8.0/en/update.html
+RU: http://www.mysql.ru/docs/man/UPDATE.html
+
+Delete
+EN: https://dev.mysql.com/doc/refman/8.0/en/delete.html
+RU: http://www.mysql.ru/docs/man/DELETE.html
+
+TRUNCATE
+EN: https://dev.mysql.com/doc/refman/8.0/en/truncate-table.html
+RU: http://www.mysql.ru/docs/man/TRUNCATE.html
+
+Сервис для генерации данных:
+http://filldb.info/
+
+Домашнее задание:
+1. Заполнить все таблицы БД vk данными (по 10-100 записей в каждой таблице)
+2. Написать скрипт, возвращающий список имен (только firstname) пользователей без повторений в алфавитном порядке
+3. Написать скрипт, отмечающий несовершеннолетних пользователей как неактивных (поле is_active = false). Предварительно добавить такое поле в таблицу profiles со значением по умолчанию = TRUE (или 1)
+4. Написать скрипт, удаляющий сообщения «из будущего» (дата позже сегодняшней)
+5. Написать название темы курсового проекта (в комментарии)
+*/
+
+/*#INSERT
+Существует три варианта использования. Код из документации
+*/
+-- Первый вариант:
+INSERT [LOW_PRIORITY | DELAYED | HIGH_PRIORITY] [IGNORE]
+    [INTO] tbl_name
+    [PARTITION (partition_name [, partition_name] ...)]
+    [(col_name [, col_name] ...)]
+    { {VALUES | VALUE} (value_list) [, (value_list)] ...
+      |
+      VALUES row_constructor_list
+    }
+    [AS row_alias[(col_alias [, col_alias] ...)]]
+    [ON DUPLICATE KEY UPDATE assignment_list]
+
+-- пример:
+INSERT INTO `users` (`id`, `firstname`, `lastname`, `email`, `phone`) 
+VALUES ('58', 'Dean', 'Satterfield', 'orin69@example.net', '9160120629');
+
+--при вставке множества значений лучше использовать одну команду INSERT
+--если вставляются все поля, то можно не указывать перечисление полей
+INSERT INTO users VALUES
+('5', 'Reuben', 'Nienow', 'arlo515@example.org', NULL, 0),
+('6', 'Reuben', 'Nienow', 'arlo516@example.org', NULL, 0),
+('7', 'Reuben', 'Nienow', 'arlo517@example.org', NULL, 0),
+('8', 'Reuben', 'Nienow', 'arlo518@example.org', NULL, 0)
+;
+--Если нужно вставить значение по умолчанию, вставляем DEFAULT
+('7', 'Reuben', DEFAULT, 'arlo517@example.org', NULL, 0),
+
+-- Второй вариант:
+-- вставляем одну строку с данными, к конкретной адресацией
+INSERT [LOW_PRIORITY | DELAYED | HIGH_PRIORITY] [IGNORE]
+    [INTO] tbl_name
+    [PARTITION (partition_name [, partition_name] ...)]
+    [AS row_alias[(col_alias [, col_alias] ...)]]
+    SET assignment_list
+    [ON DUPLICATE KEY UPDATE assignment_list]
+
+-- пример:
+INSERT INTO users
+SET
+	firstname = 'Иван',
+	lastname = 'Диванов',
+	email = 'ivan@mail.ru',
+	phone = '987654321'
+;
+
+-- Третий вариант:
+-- вставка из другой таблички
+INSERT [LOW_PRIORITY | HIGH_PRIORITY] [IGNORE]
+    [INTO] tbl_name
+    [PARTITION (partition_name [, partition_name] ...)]
+    [(col_name [, col_name] ...)]
+    [AS row_alias[(col_alias [, col_alias] ...)]]
+    {SELECT ... | TABLE table_name}
+    [ON DUPLICATE KEY UPDATE assignment_list]
+
+-- пример:
+INSERT INTO `users` 
+	(`id`, `firstname`, `lastname`, `email`, `phone`) 
+SELECT 
+ 	`id`, `firstname`, `lastname`, `email`, `phone`
+FROM vk2.users
+WHERE id = 100 -- или id >= 100
+; --Вставить в таблицу users данные из базы vk2 таблицы users в котором id = 100
+
+-- [LOW_PRIORITY | DELAYED | HIGH_PRIORITY] - приоритет задачи
+-- [IGNORE] - игнорирует ошибки, давая завершить весь скрипт
+
+
+/*#SELECT - применяется для извлечения строк, выбранных из одной или нескольких таблиц.
+*/
+SELECT
+    [ALL | DISTINCT | DISTINCTROW ]
+    [HIGH_PRIORITY]
+    [STRAIGHT_JOIN]
+    [SQL_SMALL_RESULT] [SQL_BIG_RESULT] [SQL_BUFFER_RESULT]
+    [SQL_NO_CACHE] [SQL_CALC_FOUND_ROWS]
+    select_expr [, select_expr] ...
+    [into_option]
+    [FROM table_references
+      [PARTITION partition_list]]
+    [WHERE where_condition]
+    [GROUP BY {col_name | expr | position}, ... [WITH ROLLUP]]
+    [HAVING where_condition]
+    [WINDOW window_name AS (window_spec)
+        [, window_name AS (window_spec)] ...]
+    [ORDER BY {col_name | expr | position}
+      [ASC | DESC], ... [WITH ROLLUP]]
+    [LIMIT {[offset,] row_count | row_count OFFSET offset}]
+    [into_option]
+    [FOR {UPDATE | SHARE}
+        [OF tbl_name [, tbl_name] ...]
+        [NOWAIT | SKIP LOCKED] 
+      | LOCK IN SHARE MODE]
+    [into_option]
+
+into_option: {
+    INTO OUTFILE 'file_name'
+        [CHARACTER SET charset_name]
+        export_options
+  | INTO DUMPFILE 'file_name'
+  | INTO var_name [, var_name] ...
+}
+
+-- примеры:
+SELECT 10+20;
+SELECT 'Hello world!';
+
+SELECT DISTINCT firstname, lastname 
+FROM users;-- DISTINCT выбирает уникальные данные (сочетание ячеек тоже)
+
+SELECT *
+FROM users
+LIMIT 1 offset 5;
+
+SELECT *
+FROM users
+WHERE id = 5 OR firstname = 'Reuben';
+
+SELECT *
+FROM users
+WHERE id IN (1,2,30,4);
+
+-- Параметры (опции) DISTINCT, DISTINCTROW и ALL указывают, должны ли возвращаться дублирующиеся записи. По умолчанию установлен параметр (ALL)
+--
+
+
+-- #UPDATE - меняем данные. 
+
+--Single-table syntax:
+UPDATE [LOW_PRIORITY] [IGNORE] table_reference
+    SET assignment_list
+    [WHERE where_condition]
+    [ORDER BY ...]
+    [LIMIT row_count]
+
+VALUE:
+    {expr | DEFAULT}
+
+assignment:
+    col_name = VALUE
+
+assignment_list:
+    assignment [, assignment] ...
+	
+--Multiple-table syntax:
+UPDATE [LOW_PRIORITY] [IGNORE] table_references
+    SET assignment_list
+    [WHERE where_condition]
+
+-- отправка запроса в друзья
+INSERT INTO friend_requests (`initiator_user_id`, `target_user_id`, `status`)
+VALUES ('1', '2', 'requested');
+
+INSERT INTO friend_requests (`initiator_user_id`, `target_user_id`, `status`)
+VALUES ('1', '3', 'requested');
+
+INSERT INTO friend_requests (`initiator_user_id`, `target_user_id`, `status`)
+VALUES ('1', '4', 'requested');
+
+INSERT INTO friend_requests (`initiator_user_id`, `target_user_id`, `status`)
+VALUES ('1', '5', 'requested');
+
+INSERT INTO friend_requests (`initiator_user_id`, `target_user_id`)
+VALUES ('1', '5'), ('1', '3'), ('1', '4'); -- если status = 'requested' по умолчанию
+-- Проверить сможет ли воспринять строчный id
+
+
+-- отклонить запрос в друзья
+UPDATE friend_requests
+SET 
+	status = 'declined', -- меняем статус в зависимости от ответа пользователя
+	confirmed_at = now() -- или ... ON UPDATE CURRENT_TIMESTAMP при создании столбца
+WHERE
+	initiator_user_id = 1 AND target_user_id = 3
+--  AND status = 'requested'
+	;
+
+	
+-- #DELETE
+
+-- добавим несколько пользователей
+INSERTinto users (id, firstname, lastname, email, phone) VALUES 
+('102', 'Reuben', 'Nienow', 'arlo50102@example.org', '9374071116'),
+('200', 'Frederik', 'Upton', 'terrence.cartwright@example.org', '9127498182'),
+('300', 'Unique', 'Windler', 'rupert55@example.org', '9921090703'),
+('400', 'Norene', 'West', 'rebekah29@example.net', '9592139196'),
+('500', 'Frederick', 'Effertz', 'von.bridget@example.net', '9909791725')
+;
+
+-- добавим несколько сообщений
+INSERT INTO messages VALUES 
+('1','1','2','Voluptatem ut quaerat quia. Pariatur esse amet ratione qui quia. In necessitatibus reprehenderit et. Nam accusantium aut qui quae nesciunt non.','1995-08-28 22:44:29'),
+('2','2','1','Sint dolores et debitis est ducimus. Aut et quia beatae minus. Ipsa rerum totam modi sunt sed. Voluptas atque eum et odio ea molestias ipsam architecto.',now()),
+('3','3','1','Sed mollitia quo sequi nisi est tenetur at rerum. Sed quibusdam illo ea facilis nemo sequi. Et tempora repudiandae saepe quo.','1993-09-14 19:45:58'),
+('4','1','3','Quod dicta omnis placeat id et officiis et. Beatae enim aut aliquid neque occaecati odit. Facere eum distinctio assumenda omnis est delectus magnam.','1985-11-25 16:56:25'),
+('5','1','5','Voluptas omnis enim quia porro debitis facilis eaque ut. Id inventore non corrupti doloremque consequuntur. Molestiae molestiae deleniti exercitationem sunt qui ea accusamus deserunt.','1999-09-19 04:35:46')
+;
+
+delete FROM messages
+WHERE from_user_id = 1 --все отправленные пользователем 1
+;
+
+delete FROM messages
+WHERE from_user_id = 1 AND to_user_id = 2 -- вся переписка между 1 и 2
+;
+
+delete FROM users
+WHERE id = 1;
+
+
+-- #TRUNCATE
+
+TRUNCATE TABLE messages;
+--Эта операция удаляет и воссоздает таблицу, что намного быстрее, чем поочередное удаление строк. (очистка таблицы)
+
+INSERT INTO messages (from_user_id, to_user_id, body, created_at) VALUES 
+('1','200','Voluptatem ut quaerat quia. Pariatur esse amet ratione qui quia. In necessitatibus reprehenderit et. Nam accusantium aut qui quae nesciunt non.','1995-08-28 22:44:29'),
+('200','1','Sint dolores et debitis est ducimus. Aut et quia beatae minus. Ipsa rerum totam modi sunt sed. Voluptas atque eum et odio ea molestias ipsam architecto.',now()),
+('3','1','Sed mollitia quo sequi nisi est tenetur at rerum. Sed quibusdam illo ea facilis nemo sequi. Et tempora repudiandae saepe quo.','1993-09-14 19:45:58'),
+('1','3','Quod dicta omnis placeat id et officiis et. Beatae enim aut aliquid neque occaecati odit. Facere eum distinctio assumenda omnis est delectus magnam.','1985-11-25 16:56:25'),
+('1','500','Voluptas omnis enim quia porro debitis facilis eaque ut. Id inventore non corrupti doloremque consequuntur. Molestiae molestiae deleniti exercitationem sunt qui ea accusamus deserunt.','1999-09-19 04:35:46');
+
+
+
+-- Генерация данных
+
+-- Сервис для генерации данных:
+-- http://filldb.info/
+1:17 -- нюансы настройки
+--не забывать про внешние ключи, и генерировать сначала независимые таблицы
+
+
+_________________________________________________________________________________________
+
+--Урок 5. Видеоурок. Операторы, фильтрация, сортировка и ограничение. Агрегация данных----
+
+--Важное объявление!
+--Полезные ссылки:
+/*Домашнее задание:
+1. Пусть в таблице users поля created_at и updated_at оказались незаполненными. Заполните их текущими датой и временем.
+
+2. Таблица users была неудачно спроектирована. Записи created_at и updated_at были заданы типом VARCHAR и в них долгое время помещались значения в формате "20.10.2017 8:10". Необходимо преобразовать поля к типу DATETIME, сохранив введеные ранее значения.
+
+3. В таблице складских запасов storehouses_products в поле VALUE могут встречаться самые разные цифры: 0, если товар закончился и выше нуля, если на складе имеются запасы. Необходимо отсортировать записи таким образом, чтобы они выводились в порядке увеличения значения VALUE. Однако, нулевые запасы должны выводиться в конце, после всех записей.
+*/
+
+-- Арифметические операторы
+
+2 + 5  -- Сложение
+5 - 2  -- Вычитание
+2 * 3  -- Умножение
+2 / 3  -- Деление
+9 % 3  -- Остаток от деления
+10 DIV 3 -- Целочисленное деление 
+
+SELECT 3 + 5;
++-------+
+| 3 + 5 |
++-------+
+|     8 |
++-------+
+
+SELECT 3 + 5 AS summ; --можно переименовать
++------+
+| summ |
++------+
+|    8 |
++------+
+
+SELECT * FROM catalogs;
++----+--------------------+
+| id | name               |
++----+--------------------+
+|  1 | Процессоры         |
+|  2 | Материнские платы  |
+|  3 | Видеокарты         |
++----+--------------------+
+
+ UPDATE catalogs SET id = id + 10;
+ -- получаем:
++----+--------------------+
+| id | name               |
++----+--------------------+
+| 11 | Процессоры         |
+| 12 | Материнские платы  |
+| 13 | Видеокарты         |
++----+--------------------+
+
+Select 3 + NULL; -- операции с NULL приводят к неопределённому NULL
++----------+
+| 3 + NULL |
++----------+
+|     NULL |
++----------+
+
+SELECT '3' + '5'; -- строки автоматически приводит к числу
++-----------+
+| '3' + '5' |
++-----------+
+|         8 |
++-----------+
+
+SELECT 'abc' + 'def'; -- если нельзя привести к числу то = 0;
++---------------+
+| 'abc' + 'def' |
++---------------+
+|             0 |
++---------------+
+
+SELECT 8 - 3; -- = 5 
+
+SELECT -7; -- = -7 унарный оператор
+
+SELECT 8 / 0; -- = 0 деление на ноль приводит к нолю.
+
+SELECT 5/2, 5 DIV 2; -- обычное и целочисленное деление
++--------+---------+
+| 5/2    | 5 DIV 2 |
++--------+---------+
+| 2.5000 |       2 |
++--------+---------+
+
+SELECT 5 - 2 * 2; -- = 1 операции выполняются в математическом порядке
+
+SELECT 5 % 2, 5 MOD 2 -- = 1, 1 альтернативная запись
+
+SELECT TRUE, FALSE; -- в реальности используется TINYINT
++------+-------+
+| TRUE | FALSE |
++------+-------+
+|    1 |     0 |
++------+-------+
+
+
+-- Операторы сравнения: --
+>
+>=
+<
+<=
+=
+!=, <>
+<=> -- Безопасное сравнение (оператор НЛО) позволяет сравнить с NULL
+
+SELECT 2 > 3; -- = 0 ложь
+
+SELECT 2 < 3; -- = 1 истина
+
+SELECT NOT TRUE, NOT FALSE; -- = 0, 1
+
+SELECT ! TRUE, ! FALSE; -- = 0, 1 то же самое
+
+SELECT 2 != 3, 2 <> 3; -- = 1, 1
+SELECT NOT 2 != 3, NOT 2 <> 3; -- = 0, 0
+
+SELECT 2 = NULL, 2 != NULL; -- = NULL, NULL;
+SELECT 2 <=> NULL, NULL <=> NULL; -- = 0, 1;
+
+SELECT 2 IS NULL, 2 IS NOT NULL, NULL IS NULL, NULL IS NOT NULL; -- = 0, 1, 1, 0
+
+
+SELECT * FROM catalogs WHERE name IS NULL; -- выведет строки где name = NULL
+SELECT * FROM catalogs WHERE name IS NOT NULL; -- выведет строки где name != NULL
+
+
+-- логическое И (AND) -- 
+TRUE  AND  TRUE    -- = 1 TRUE 
+TRUE  AND  FALSE   -- = 0 FALSE 
+TRUE  AND  FALSE   -- = 0 FALSE 
+FALSE AND  FALSE   -- = 0 FALSE 
+
+-- логическое ИЛИ (OR) -- 
+TRUE  OR  TRUE     -- = 1 TRUE 
+TRUE  OR  FALSE    -- = 1 TRUE 
+TRUE  OR  FALSE    -- = 1 TRUE 
+FALSE OR  FALSE    -- = 0 FALSE 
+
+-- выражения можно сохранять в таблицах:
+CREATE TABLE tbl (x INT, y INT, summ INT AS (x + y)); 
+INSERT INTO tbl (x, y) VALUES (1,1), (5, 6), (11, 12);
++------+------+------+
+| x    | y    | summ |
++------+------+------+
+|    1 |    1 |    2 |
+|    5 |    6 |   11 |
+|   11 |   12 |   23 |
++------+------+------+
+-- третий столбец вычисляется при вызове.
+
+--если мы хотим что-бы значения его хранились в базе постоянно (на жёстком диске) то:
+CREATE TABLE tbl (x INT, y INT, summ INT AS (x + y) STORED);
+
+
+-- Операторы, фильтрация, сортировка и ограничение
+-- Операторы
+-- Условная выборка
+-- Сортировка и ограничения
+-- Предопределённые функции Часть 1
+-- Предопределённые функции Часть 2
+
+-- #Условная выборка
+
+SELECT * FROM catalogs;
++----+--------------------+
+| id | name               |
++----+--------------------+
+|  1 | Процессоры         |
+|  2 | Материнские платы  |
+|  3 | Видеокарты         |
+|  4 | Жесткие диски      |
+|  5 | Оперативная память |
++----+--------------------+
+
+SELECT * FROM catalogs WHERE id > 2; -- добавили условия выборки
++----+--------------------+
+| id | name               |
++----+--------------------+
+|  3 | Видеокарты         |
+|  4 | Жесткие диски      |
+|  5 | Оперативная память |
++----+--------------------+
+
+mysql> SELECT * FROM catalogs WHERE id > 2 AND id <= 4;
++----+---------------+
+| id | name          |
++----+---------------+ -- 2 < id <= 4 
+|  3 | Видеокарты    |
+|  4 | Жесткие диски |
++----+---------------+
+
+SELECT 2 BETWEEN 2 AND 4; -- = 1 TRUE (2 входит в диапазон )
+SELECT 20 BETWEEN 2 AND 4; -- = 0 FALSE (20 не входит в диапазон )
+
+SELECT * FROM catalogs WHERE id BETWEEN 3 AND 4; -- id между 3 и 4 включительно
++----+---------------+
+| id | name          |
++----+---------------+
+|  3 | Видеокарты    |
+|  4 | Жесткие диски |
++----+---------------+
+
+SELECT * FROM catalogs WHERE id NOT BETWEEN 3 AND 4;
++----+--------------------+
+| id | name               |
++----+--------------------+
+|  1 | Процессоры         |
+|  2 | Материнские платы  |
+|  5 | Оперативная память |
++----+--------------------+
+
+-- оператор #IN
+
+SELECT * FROM catalogs WHERE id IN (1, 2, 5); == всё что входит в список
++----+--------------------+
+| id | name               |
++----+--------------------+
+|  1 | Процессоры         |
+|  2 | Материнские платы  |
+|  5 | Оперативная память |
++----+--------------------+
+
+SELECT 2 IN (0, 5, 'str'); -- = 0 FALSE - не входит в список
+SELECT 2 IN (0, NULL, 5, 'str'); -- = NULL
+
+SELECT * FROM catalogs WHERE id NOT IN (1, 2, 5);
++----+---------------+
+| id | name          |
++----+---------------+
+|  3 | Видеокарты    |
+|  4 | Жесткие диски |
++----+---------------+
+
+
+--Оператор #LIKE
+
+SELECT * FROM catalogs WHERE name = 'Процессоры';
++----+------------+
+| id | name       |
++----+------------+
+|  1 | Процессоры |
++----+------------+
+
+SELECT * FROM catalogs WHERE name LIKE 'Процессоры'; -- результат аналогичный
+-- разница в том что можно использовать спецсимволы (шаблоны)
+-- % - любое кол-во символов   
+-- _ - один любой символ
+
+SELECT 'Программист' LIKE 'Программ%'; -- = 1 TRUE 
+SELECT 'Программа' LIKE 'Программ%'; -- = 1 TRUE 
+SELECT 'Программ' LIKE 'Программ%'; -- = 1 TRUE 
+SELECT 'Программирование' LIKE 'П%е'; -- = 1 TRUE 
+SELECT 'Программирование' LIKE '%ние'; -- = 1 TRUE 
+SELECT 'код' LIKE '___', 'рот' LIKE '___', 'абв' LIKE '___'; -- = 1, 1, 1
+
+SELECT '15%', 'my_sql';
++-----+--------+
+| 15% | my_sql |
++-----+--------+
+| 15% | my_sql |
++-----+--------+
+
+-- если нужны сами символы, то экранируем:
+SELECT '15%' LIKE '15\%', 'my_sql' LIKE 'my\_sql';
++-------------------+-------------------------+
+| '15%' LIKE '15\%' | 'my_sql' LIKE 'my\_sql' |
++-------------------+-------------------------+
+|                 1 |                       1 |
++-------------------+-------------------------+
+
+--выбираем данные с полем name оканчивающимся на 'ы'
+SELECT * FROM catalogs WHERE name LIKE '%ы';
++----+-------------------+
+| id | name              |
++----+-------------------+
+|  1 | Процессоры        |
+|  2 | Материнские платы |
+|  3 | Видеокарты        |
++----+-------------------+
+
+SELECT * FROM catalogs WHERE name NOT LIKE '%ы'; -- и наборот
++----+--------------------+
+| id | name               |
++----+--------------------+
+|  4 | Жесткие диски      |
+|  5 | Оперативная память |
++----+--------------------+
+
+--Таблица users
+SELECT * FROM users;
++----+-----------+-------------+---------------------+---------------------+
+| id | name      | birthday_at | created_at          | updated_at          |
++----+-----------+-------------+---------------------+---------------------+
+|  1 | Геннадий  | 1990-10-05  | 2020-03-24 17:11:48 | 2020-03-24 17:11:48 |
+|  2 | Наталья   | 1984-11-12  | 2020-03-24 17:11:48 | 2020-03-24 17:11:48 |
+|  3 | Александр | 1985-05-20  | 2020-03-24 17:11:48 | 2020-03-24 17:11:48 |
+|  4 | Сергей    | 1988-02-14  | 2020-03-24 17:11:48 | 2020-03-24 17:11:48 |
+|  5 | Иван      | 1998-01-12  | 2020-03-24 17:11:48 | 2020-03-24 17:11:48 |
+|  6 | Мария     | 1992-08-29  | 2020-03-24 17:11:48 | 2020-03-24 17:11:48 |
++----+-----------+-------------+---------------------+---------------------+
+
+-- выберем кто родился в 90-е годы
+SELECT * FROM users WHERE birthday_at >= '1990-01-01' AND birthday_at < '2000-01-01';
++----+----------+-------------+---------------------+---------------------+
+| id | name     | birthday_at | created_at          | updated_at          |
++----+----------+-------------+---------------------+---------------------+
+|  1 | Геннадий | 1990-10-05  | 2020-03-24 17:11:48 | 2020-03-24 17:11:48 |
+|  5 | Иван     | 1998-01-12  | 2020-03-24 17:11:48 | 2020-03-24 17:11:48 |
+|  6 | Мария    | 1992-08-29  | 2020-03-24 17:11:48 | 2020-03-24 17:11:48 |
++----+----------+-------------+---------------------+---------------------+
+-- или:
+SELECT * FROM users WHERE birthday_at BETWEEN '1990-01-01' AND '2000-01-01';
+-- или:
+SELECT * FROM users WHERE birthday_at LIKE '199%';
+
+
+
+--Оператор #RLIKE или #REGEXP поиск с регулярными выражениями
+
+SELECT 'грамм' RLIKE 'грам', 'граммпластинка' RLIKE 'грам'\G
+		 'грамм' RLIKE 'грам': 1
+'граммпластинка' RLIKE 'грам': 1
+--ищет включения сразу аналогично LIKE '%грам%'
+
+SELECT 'программирование' RLIKE '^грам', 'грампластинка' RLIKE '^грам'\G
+'программирование' RLIKE '^грам': 0
+   'грампластинка' RLIKE '^грам': 1
+-- ищет в начале слова 
+
+SELECT 'грампластинка' RLIKE '^грампластинка$'; -- ищет всю строку как LIKE
+
+SELECT 'грампластинка' RLIKE 'тинка$';
+'грампластинка' RLIKE 'тинка$': 1 -- ищет в конце строки
+
+
+SELECT 'abc' RLIKE 'abc|абв', 'абв' RLIKE 'abc|абв'\G
+'abc' RLIKE 'abc|абв': 1
+'абв' RLIKE 'abc|абв': 1
+
+SELECT  'a' RLIKE '[abc]' AS a, -- хотя бы один символ из перечисленных 'abc'
+		'b' RLIKE '[abc]' AS b,
+		'w' RLIKE '[abc]' AS w; -- переименовать выражение ('a' RLIKE '[abc]') в a
++---+---+---+
+| a | b | w |
++---+---+---+ --если есть один из перечисленных символов...
+| 1 | 1 | 0 |
++---+---+---+
+
+SELECT 'д' RLIKE '[а-яё]'; -- из диапазона а-я. ё не входит в диапазон, нужно добавить
+'д' RLIKE '[а-яё]': 1      -- это особенность русской кодировки -'ё' отдельно от др. сим.
+
+SELECT 7 RLIKE '[0-9]', 7 RLIKE '[0123456789]'; --:1,1  идентичные выражения
+
+-- для подобных диапозонов существуют классы:
+SELECT 7 RLIKE '[[:digit:]]'; --:1   хотябы одна цифра
+SELECT 'asd' RLIKE '[[:digit:]]'; --:0   
+
+--квантификаторы:
+-- ? - символ входит ноль или один раз,
+-- * - любое количество вхождений символа включая ноль,
+-- + - одно и более вхождений
+
+SELECT '1' RLIKE '^[0-9]+$', --:1 - выражение поиска только числового значения
+   '34234' RLIKE '^[0-9]+$', --:1 
+  '342.34' RLIKE '^[0-9]+$', --:0
+        '' RLIKE '^[0-9]+$'; --:0
+		
+-- создадим выражение поиска цены
+SELECT '342.34' RLIKE '^[0-9]*\\.[0-9]{2}$'; --строка должна соответствовать формату цены
+-- [0-9]{2}$ - два цифровых символа в конце строки
+
+
+
+---< #Сортировка и ограничения >--- 
+
+--Сортировка
+--Ограничение выборки
+--Извлечение уникальных значений
+--Сортировка и ограничение в DELETE и UPDATE
+
+-- #Сортировка
+mysql> SELECT * FROM catalogs order by name; -- сортировка (порядок) по name
++----+--------------------+
+| id | name               |
++----+--------------------+
+|  3 | Видеокарты         |
+|  4 | Жесткие диски      |
+|  2 | Материнские платы  |
+|  5 | Оперативная память |
+|  1 | Процессоры         |
++----+--------------------+
+
+SELECT * FROM catalogs ORDER BY name DESC; -- обратный порядок
+
+
+SELECT * FROM products;
++---+-------------+---------------+---------+---+-------------------+-------------------+
+| id| name        | description   | price   | cat..id | created_at  | updated_at        |
++---+-------------+---------------+---------+---+-------------------+-------------------+ 
+| 1 | Int i3-8100 | Проц... INTEL | 7890.00 | 1 |2020-03-24 17:13:33|2020-03-24 17:13:33| 
+| 2 | Int i5-7400 | Проц... INTEL |12700.00 | 1 |2020-03-24 17:13:33|2020-03-24 17:13:33|
+| 3 | AMD FX-8320E| Проц... AMD.  | 4780.00 | 1 |2020-03-24 17:13:33|2020-03-24 17:13:33| 
+| 4 | AMD FX-8320 | Проц... AMD.  | 7120.00 | 1 |2020-03-24 17:13:33|2020-03-24 17:13:33| 
+| 5 | ASUS ...    | Мат... ASUS   |19310.00 | 2 |2020-03-24 17:13:33|2020-03-24 17:13:33| 
+| 6 | Gigabyte... |Мат... Gigabyte| 4790.00 | 2 |2020-03-24 17:13:33|2020-03-24 17:13:33| 
+| 7 | MSI B250M...|Мат... MSI     | 5060.00 | 2 |2020-03-24 17:13:33|2020-03-24 17:13:33| 
++---+-------------+---------------+---------+---+-------------------+-------------------+
+
+SELECT id, catalog_id, price, name FROM products;
++----+------------+----------+-------------------------+
+| id | catalog_id | price    | name                    |
++----+------------+----------+-------------------------+
+|  1 |          1 |  7890.00 | Intel Core i3-8100      |
+|  2 |          1 | 12700.00 | Intel Core i5-7400      |
+|  3 |          1 |  4780.00 | AMD FX-8320E            |
+|  4 |          1 |  7120.00 | AMD FX-8320             |
+|  5 |          2 | 19310.00 | ASUS ROG MAXIMUS X HERO |
+|  6 |          2 |  4790.00 | Gigabyte H310M S2H      |
+|  7 |          2 |  5060.00 | MSI B250M GAMING PRO    |
++----+------------+----------+-------------------------+
+
+SELECT id, catalog_id, price, name FROM products ORDER BY catalog_id, price;
++----+------------+----------+-------------------------+
+| id | catalog_id | price    | name                    |
++----+------------+----------+-------------------------+
+|  3 |          1 |  4780.00 | AMD FX-8320E            |
+|  4 |          1 |  7120.00 | AMD FX-8320             |
+|  1 |          1 |  7890.00 | Intel Core i3-8100      |
+|  2 |          1 | 12700.00 | Intel Core i5-7400      |
+|  6 |          2 |  4790.00 | Gigabyte H310M S2H      |
+|  7 |          2 |  5060.00 | MSI B250M GAMING PRO    |
+|  5 |          2 | 19310.00 | ASUS ROG MAXIMUS X HERO |
++----+------------+----------+-------------------------+
+--сортировка сначала по catalog_id потом по price.
+
+
+-- #Ограничение выборки
+
+SELECT id, catalog_id, price, name FROM products LIMIT 2; --выводим только 2 строки
++----+------------+----------+--------------------+
+| id | catalog_id | price    | name               |
++----+------------+----------+--------------------+
+|  1 |          1 |  7890.00 | Intel Core i3-8100 |
+|  2 |          1 | 12700.00 | Intel Core i5-7400 |
++----+------------+----------+--------------------+
+
+
+SELECT id, catalog_id, price, name FROM products LIMIT 4, 2;
++----+------------+----------+-------------------------+
+| id | catalog_id | price    | name                    |
++----+------------+----------+-------------------------+
+|  5 |          2 | 19310.00 | ASUS ROG MAXIMUS X HERO |--выводим после 4 позиции
+|  6 |          2 |  4790.00 | Gigabyte H310M S2H      |--двухстрочной выборки
++----+------------+----------+-------------------------+
+-- альтернативная форма записи:
+SELECT id, catalog_id, price, name FROM products LIMIT 2 OFFSET 4;
+
+
+-- #Извлечение уникальных значений
+
+SELECT DISTINCT catalog_id FROM products ORDER BY catalog_id;
++------------+
+| catalog_id |
++------------+
+|          1 |  --вывод уникальных значений
+|          2 |
++------------+
+
+SELECT ALL catalog_id FROM products ORDER BY catalog_id; 
+-- ALL противоположность DISTINCT. Выводит все значения (установлено по умолчанию)
+
+
+-- Уменьшим цену материнских плат на 10%, но для тех, которые дороже 5000
+SELECT id, catalog_id, price, name FROM products WHERE catalog_id = 2 AND price > 5000;
++----+------------+----------+-------------------------+
+| id | catalog_id | price    | name                    |
++----+------------+----------+-------------------------+
+|  5 |          2 | 19310.00 | ASUS ROG MAXIMUS X HERO |
+|  7 |          2 |  5060.00 | MSI B250M GAMING PRO    |
++----+------------+----------+-------------------------+
+
+SELECT id, catalog_id, price, name FROM products;
++----+------------+----------+-------------------------+
+| id | catalog_id | price    | name                    |
++----+------------+----------+-------------------------+
+|  1 |          1 |  7890.00 | Intel Core i3-8100      |
+|  2 |          1 | 12700.00 | Intel Core i5-7400      |
+|  3 |          1 |  4780.00 | AMD FX-8320E            |
+|  4 |          1 |  7120.00 | AMD FX-8320             |
+|  5 |          2 | 17379.00 | ASUS ROG MAXIMUS X HERO |
+|  6 |          2 |  4790.00 | Gigabyte H310M S2H      |
+|  7 |          2 |  4554.00 | MSI B250M GAMING PRO    |
++----+------------+----------+-------------------------+
+
+-- теперь удалим 2 самые дорогие позиции:
+DELETE FROM products ORDER BY price desc LIMIT 2;
++----+------------+---------+----------------------+
+| id | catalog_id | price   | name                 |
++----+------------+---------+----------------------+
+|  1 |          1 | 7890.00 | Intel Core i3-8100   |
+|  3 |          1 | 4780.00 | AMD FX-8320E         |
+|  4 |          1 | 7120.00 | AMD FX-8320          |
+|  6 |          2 | 4790.00 | Gigabyte H310M S2H   |
+|  7 |          2 | 4554.00 | MSI B250M GAMING PRO |
++----+------------+---------+----------------------+
+-- отсортировали  по цене в обратном порядке и удалили 2 строки
+
+
+
+---< #Предопределённые функции Часть 1 >---
+-- Предопределённые функции
+-- Календарные функции
+-- Выборка случайного значения
+-- Справочные функции
+
+
+-- #Предопределённые функции
+SELECT now(); -- Возвращает дату и время текущие
+now(): 2020-03-26 12:18:23
+
+describe users; --просмотр структуры таблицы. Наименования и свойства столбцов.
++------------+-------------------+----+---+-----------------+---------------------------+
+| Field      |Type               |Null|Key|Default          |Extra                      |
++------------+-------------------+----+---+-----------------+---------------------------+
+| id         |bigint(20) unsigned|NO  |PRI|NULL             |auto_increment             |
+| name       |varchar(255)       |YES |   |NULL             |                           |
+| birthday_at|date               |YES |   |NULL             |                           |
+| created_at |datetime           |YES |   |CURRENT_TIMESTAMP|                           |
+| updated_at |datetime           |YES |   |CURRENT_TIMESTAMP|on update CURRENT_TIMESTAMP|
++------------+-------------------+----+---+-----------------+---------------------------+
+
+-- столбцы created_at, updated_at задаются неявно. Но мы можем задать их при помощи функции now():
+INSERTinto users VALUES (null, 'Александр', '1986-01-20', now(), now());
+
+
+-- #Календарные функции
+
+SELECT name, created_at, updated_at FROM users WHERE name RLIKE 'Алек';
++-----------+---------------------+---------------------+
+| name      | created_at          | updated_at          |
++-----------+---------------------+---------------------+
+| Александр | 2020-03-26 12:32:01 | 2020-03-26 12:32:01 |
++-----------+---------------------+---------------------+
+-- now() в пределах одного запроса вызывается один раз. По этому время одинаковое
+
+SELECT name, DATE(created_at), DATE(updated_at) FROM users; -- выводим только дату
++-----------+------------------+------------------+
+| name      | DATE(created_at) | DATE(updated_at) |
++-----------+------------------+------------------+
+| Геннадий  | 2020-03-24       | 2020-03-24       |
+| Наталья   | 2020-03-24       | 2020-03-24       |
+| Александр | 2020-03-24       | 2020-03-24       |
+| Сергей    | 2020-03-24       | 2020-03-24       |
+| Иван      | 2020-03-24       | 2020-03-24       |
+| Мария     | 2020-03-24       | 2020-03-24       |
++-----------+------------------+------------------+
+-- но оперировать конструкцией DATE(created_at) неудобно, часто переименовывают с AS
+
+SELECT id, 
+	name, 
+	birthday_at, 
+	DATE(created_at) AS created_at, 
+	DATE(updated_at) AS updated_at 
+	FROM users;
+	
+--также можно AS опускать, заменяя пробелом:
+SELECT id, 
+	name, 
+	birthday_at, 
+	DATE(created_at) created_at, 
+	DATE(updated_at) updated_at 
+	FROM users;
++----+-----------+-------------+------------+------------+
+| id | name      | birthday_at | created_at | updated_at |
++----+-----------+-------------+------------+------------+
+|  1 | Геннадий  | 1990-10-05  | 2020-03-24 | 2020-03-24 |
+|  2 | Наталья   | 1984-11-12  | 2020-03-24 | 2020-03-24 |
+|  3 | Александр | 1985-05-20  | 2020-03-24 | 2020-03-24 |
+|  4 | Сергей    | 1988-02-14  | 2020-03-24 | 2020-03-24 |
+|  5 | Иван      | 1998-01-12  | 2020-03-24 | 2020-03-24 |
+|  6 | Мария     | 1992-08-29  | 2020-03-24 | 2020-03-24 |
++----+-----------+-------------+------------+------------+
+
+-- для форматирования даты применяется DATE_FORMAT()
+ SELECT DATE_FORMAT( NOW(), 'На дворе %Y год');
++----------------------------------------+
+| DATE_FORMAT( NOW(), 'На дворе %Y год') |
++----------------------------------------+
+| На дворе 2020 год                      |
++----------------------------------------+ 
+/*
+%M - Название месяца (январь...декабрь)
+%W - Название дня недели (воскресенье...суббота)
+%D - День месяца с английским суффиксом (0st, 1st, 2nd, 3rd и т.д.)
+%Y	Год, число, 4 разряда
+%y	Год, число, 2 разряда
+%a	Сокращенное наименование дня недели (Вс...Сб)
+%d	День месяца, число (00..31)
+%e	День месяца, число (0..31)
+%m	Месяц, число (00..12)
+%c	Месяц, число (0..12)
+%b	Сокращенное наименование месяца (Янв...Дек)
+%j	День года (001..366)
+%H	Час (00..23)
+%k	Час (0..23)
+%h	Час (01..12)
+%I	Час (01..12)
+%l	Час (1..12)
+%i	Минуты, число (00..59)
+%S	Секунды (00..59)
+%s	Секунды (00..59)
+-- и т.д. в документации
+*/
+
+-- можно отформатировать дату рождения в привычном формате:
+SELECT name, DATE_FORMAT(birthday_at, '%d.%m.%Y') AS FROM users;
++-----------+--------------------------------------+
+| name      | DATE_FORMAT(birthday_at, '%d.%m.%Y') |
++-----------+--------------------------------------+
+| Геннадий  | 05.10.1990                           |
+| Наталья   | 12.11.1984                           |
+| Александр | 20.05.1985                           |
+| Сергей    | 14.02.1988                           |
+| Иван      | 12.01.1998                           |
+| Мария     | 29.08.1992                           |
++-----------+--------------------------------------+
+
+
+/* UNIXSTAMP формат.  Преобразование форматов DATETIME <--> UNIXSTAMP
+
+UNIXSTAMP формат времени выраженный в секундах прошедших с 01-01-1970 00:00:00 по  19 января 2038 года в 03:14:08 UTC
+Минимальная дата в знаковом 32-битном представлении — 13 декабря 1901 года, 20:45:52 UTC (0x80000000, −2 147 483 648 секунд от 1 января 1970 года).
+
+UNIXSTAMP = 4 байта
+DATETIME  = 8 байт
+
+Функции преобразования форматов времени:
+DATETIME --> UNIX_TIMESTAMP() --> UNIXSTAMP
+UNIXSTAMP --> FROM_UNIXTIME() --> DATETIME
+
+*/
+SELECT UNIX_TIMESTAMP('2020-03-26 14:39:12') AS TIMESTAMP\G
+TIMESTAMP: 1585215552
+
+SELECT FROM_UNIXTIME('1585215552') AS DATETIME\G
+DATETIME: 2020-03-26 14:39:12.000000
+
+SELECT FROM_UNIXTIME('1585215552.8345') AS DATETIME\G
+DATETIME: 2020-03-26 14:39:12.834500
+
+
+--Вычислим возраст пользователей из таблицы users:
+SELECT name, FLOOR(TO_DAYS(now()) - TO_DAYS(birthday_at)) / 365.25 AS age FROM users;
++-----------+---------+
+| name      | age     |
++-----------+---------+
+| Геннадий  | 29.4730 |
+| Наталья   | 35.3676 |
+| Александр | 34.8501 |
+| Сергей    | 32.1123 |
+| Иван      | 22.2012 |
+| Мария     | 27.5729 |
++-----------+---------+
+
+SELECT name, FLOOR((TO_DAYS(now()) - TO_DAYS(birthday_at)) / 365.25) AS age FROM users;
++-----------+------+
+| name      | age  | -- Округлили года
++-----------+------+
+| Геннадий  |   29 |
+| Наталья   |   35 |
+| Александр |   34 |
+| Сергей    |   32 |
+| Иван      |   22 |
+| Мария     |   27 |
++-----------+------+
+-- FLOOR округляет в меньшую сторону
+
+-- Также можно воспользоваться другой функцией:
+SELECT name, TIMESTAMPDIFF(YEAR, birthday_at, NOW()) AS age FROM users;
++-----------+------+
+| name      | age  |
++-----------+------+
+| Геннадий  |   29 |
+| Наталья   |   35 |
+| Александр |   34 |
+| Сергей    |   32 |
+| Иван      |   22 |
+| Мария     |   27 |
++-----------+------+
+
+
+-- #Выборка случайного значения
+
+-- Можно вывести таблицу в случайном порядке используя функцию RAND()
+SELECT name FROM users ORDER BY RAND();
++-----------+
+| name      |
++-----------+
+| Александр |
+| Иван      |
+| Сергей    |
+| Мария     |
+| Геннадий  |
+| Наталья   |
++-----------+
+
+-- Выбираем одну случайную запись
+mysql> SELECT name FROM users order by RAND() LIMIT 1;
+name: Геннадий   
+
+-- #Справочные функции
+SELECT VERSION(); --Возвращает текущую версию MySQL сервера.
++------------+
+| VERSION()  |
++------------+
+| 5.7.25-log |
++------------+
+
+SELECT VERSION() FROM DUAL; -- можно использовать несуществующую псевдотаблицу DUAL
+-- Но практически не используется т.к. вывод работает и без неё.
+
+TRUNCATE products;
+TRUNCATE catalogs; --очищаем таблицы для следующих примеров
+INSERT INTO catalogs VALUES (NULL, 'Процессоры'); -- вставляем название нового каталога
+-- SELECT...
++----+------------+ 
+| id | name       |
++----+------------+
+|  1 | Процессоры |
++----+------------+
+
+-- Узнаем ID последней вставленной строки с автоинкрементом:
+SELECT LAST_INSERT_ID() \G --: LAST_INSERT_ID: 1
+
+--Воспользуемся этой функцией для вставки товаров из этого каталога
+INSERT INTO products
+  (name, description, price, catalog_id)
+VALUES
+  ('Intel Core i3-8100', 'Процессор Intel.', 7890.00, LAST_INSERT_ID()),
+  ('Intel Core i5-7400', 'Процессор Intel.', 12700.00, LAST_INSERT_ID()),
+  ('AMD FX-8320E', 'Процессор AMD.', 4780.00, LAST_INSERT_ID()),
+  ('AMD FX-8320', 'Процессор AMD.', 7120.00, LAST_INSERT_ID());
+
+--заполнили таблицу с catalog_id равным последней записи в таблицу catalogs  
+SELECT id, name, description, price, catalog_id FROM products;
++----+--------------------+------------------+----------+------------+
+| id | name               | description      | price    | catalog_id |
++----+--------------------+------------------+----------+------------+
+|  1 | Intel Core i3-8100 | Процессор Intel. |  7890.00 |          1 |
+|  2 | Intel Core i5-7400 | Процессор Intel. | 12700.00 |          1 |
+|  3 | AMD FX-8320E       | Процессор AMD.   |  4780.00 |          1 |
+|  4 | AMD FX-8320        | Процессор AMD.   |  7120.00 |          1 |
++----+--------------------+------------------+----------+------------+
+
+
+--Добавляем материнские карты:
+INSERT INTO catalogs VALUES (NULL, 'Материнские платы');
+INSERT INTO products
+  (name, description, price, catalog_id)
+VALUES
+  ('ASUS ROG MAXIMUS X HERO', 
+  'ASUS ROG MAXIMUS X HERO, Z370,Socket 1151-V2, DDR4, ATX', 19310.00, LAST_INSERT_ID()),
+  ('Gigabyte H310M S2H', 
+  'Gigabyte H310M S2H, H310, Socket 1151-V2, DDR4, mATX', 4790.00, LAST_INSERT_ID()),
+  ('MSI B250M GAMING PRO', 
+  'MSI B250M GAMING PRO, B250, Socket 1151, DDR4, mATX', 5060.00, LAST_INSERT_ID());
+
+ SELECT id, name, description, price, catalog_id FROM products;
++----+-------------------------+--------------------------------+----------+------------+
+| id | name                    | description                    | price    | catalog_id |
++----+-------------------------+--------------------------------+----------+------------+
+|  1 | Intel Core i3-8100      | Процессор Intel.               |  7890.00 |          1 |
+|  2 | Intel Core i5-7400      | Процессор Intel.               | 12700.00 |          1 |
+|  3 | AMD FX-8320E            | Процессор AMD.                 |  4780.00 |          1 |
+|  4 | AMD FX-8320             | Процессор AMD.                 |  7120.00 |          1 |
+|  5 | ASUS ROG MAXIMUS X HERO | ASUS ROG MAXIMUS ... DDR4, ATX | 19310.00 |          2 |
+|  6 | Gigabyte H310M S2H      | Gigabyte H310M S2H, ...mATX    |  4790.00 |          2 |
+|  7 | MSI B250M GAMING PRO    | MSI B250M GAMING PRO...ATX     |  5060.00 |          2 |
++----+-------------------------+--------------------------------+----------+------------+
+
+SELECT * FROM catalogs;
++----+-------------------+
+| id | name              |
++----+-------------------+
+|  1 | Процессоры        |
+|  2 | Материнские платы |
++----+-------------------+ 
+
+
+SELECT DATABASE(); --: DATABASE(): NULL -- NULL если не выбранна
+USE geekbrains;
+SELECT DATABASE(); --: DATABASE(): geekbrains - Возвращает текущую базу данных 
+
+SELECT USER(); -- Возвращает текущего кользователя СУБД
+
+
+
+---< #Предопределённые функции Часть 2 >---
+
+-- Математические функции
+-- Строковые функции
+-- Логические функции
+-- Вспомогательные функции
+
+
+-- #Математические функции
+RAND();
+
+-- Вычисление расстояния 
+-- Даны координаты двух точек в Декартовой системе координат. x1,y1 x2,y2
+-- D = SQRT((x1-x2)^2 + (y1-y2)^2)
+--Создадим таблицу:
+CREATE TABLE distances (
+  id SERIAL PRIMARY KEY,
+  x1 INT NOT NULL,
+  y1 INT NOT NULL,
+  x2 INT NOT NULL,
+  y2 INT NOT NULL,
+  distance DOUBLE AS (SQRT(POW(x1 - x2, 2) + POW(y1 - y2, 2)))
+) COMMENT = 'Расстояние между двумя точками';
+-- SQRT- корень квадратный, POW() - возведение в квадрат.
+
+INSERT INTO distances
+  (x1, y1, x2, y2)
+VALUES
+  (1, 1, 4, 5),
+  (4, -1, 3, 2),
+  (-2, 5, 1, 3);
+  
++----+----+----+----+----+--------------------+
+| id | x1 | y1 | x2 | y2 | distance           |
++----+----+----+----+----+--------------------+
+|  1 |  1 |  1 |  4 |  5 |                  5 |
+|  2 |  4 | -1 |  3 |  2 | 3.1622776601683795 |
+|  3 | -2 |  5 |  1 |  3 |  3.605551275463989 |
++----+----+----+----+----+--------------------+
+
+-- в качестве альтернативы можно использовать JSON поля
+DROP TABLE IF EXISTS distances;
+CREATE TABLE distances (
+  id SERIAL PRIMARY KEY,
+  a JSON NOT NULL,
+  b JSON NOT NULL,
+  distance DOUBLE AS (SQRT(POW(a->>'$.x' - b->>'$.x', 2) + POW(a->>'$.y' - b->>'$.y', 2)))
+) COMMENT = 'Расстояние между двумя точками';
+-- a->>'$.x' - оператор двойная стрелка. Использует столбец 'а' с ключём "x". 
+-- $ - вершина коллекции
+
+INSERT INTO distances
+  (a, b)
+VALUES
+  ('{"x": 1, "y": 1}', '{"x": 4, "y": 5}'),
+  ('{"x": 4, "y": -1}', '{"x": 3, "y": 2}'),
+  ('{"x": -2, "y": 5}', '{"x": 1, "y": 3}');
+
++----+-------------------+------------------+--------------------+
+| id | a                 | b                | distance           |
++----+-------------------+------------------+--------------------+
+|  1 | {"x": 1, "y": 1}  | {"x": 4, "y": 5} |                  5 |
+|  2 | {"x": 4, "y": -1} | {"x": 3, "y": 2} | 3.1622776601683795 |
+|  3 | {"x": -2, "y": 5} | {"x": 1, "y": 3} |  3.605551275463989 |
++----+-------------------+------------------+--------------------+
+
+
+
+--Вычислим площадь треугольника по его углу и двум сторонам:
+-- S = a * b * sin(angle) / 2
+CREATE TABLE triangles (
+  id SERIAL PRIMARY KEY,
+  a DOUBLE NOT NULL COMMENT 'Сторона треугольника',
+  b DOUBLE NOT NULL COMMENT 'Сторона треугольника',
+  angle INT NOT NULL COMMENT 'Угол треугольника в градусах',
+  square DOUBLE AS (a * b * SIN(RADIANS(angle)) / 2.0)
+) COMMENT = 'Площадь треугольника';
+-- SIN(RADIANS(angle) градусы преобразовываем в радианы, т.к. функция sin() работает с ними.
+
+INSERT INTO
+  triangles (a, b, angle)
+VALUES
+  (1.414, 1, 45),
+  (2.707, 2.104, 60),
+  (2.088, 2.112, 56),
+  (5.014, 2.304, 23),
+  (3.482, 4.708, 38);
+  
++----+-------+-------+-------+---------------------+
+| id | a     | b     | angle | square              |
++----+-------+-------+-------+---------------------+
+|  1 | 1.414 |     1 |    45 | 0.49992449429888913 |
+|  2 | 2.707 | 2.104 |    60 |  2.4662359679827883 |
+|  3 | 2.088 | 2.112 |    56 |  1.8279681567786432 |
+|  4 | 5.014 | 2.304 |    23 |   2.256913011738492 |
+|  5 | 3.482 | 4.708 |    38 |     5.0463480871756 |
++----+-------+-------+-------+---------------------+
+-- результат вычисления имее до 16 знаков после запятой
+
+-- поменяем таблицу для лучшего представления:
+ALTER TABLE triangles 
+	CHANGE square square DOUBLE AS (ROUND(a * b * SIN(RADIANS(angle)) / 2.0, 4));
+
+SELECT * FROM triangles;
++----+-------+-------+-------+--------+
+| id | a     | b     | angle | square |
++----+-------+-------+-------+--------+
+|  1 | 1.414 |     1 |    45 | 0.4999 |
+|  2 | 2.707 | 2.104 |    60 | 2.4662 |
+|  3 | 2.088 | 2.112 |    56 |  1.828 |
+|  4 | 5.014 | 2.304 |    23 | 2.2569 |
+|  5 | 3.482 | 4.708 |    38 | 5.0463 |
++----+-------+-------+-------+--------+
+-- округлили до 4 знака столбец square
+
+-- #округление
+ROUND() -- округляет до целого
+CELLING() -- округляет в большую сторону
+FLOOR() -- округляет в меньшую сторону
+
+
+
+
+-- #Строковые функции --
+
+SELECT id, SUBSTRING(name, 1, 5) AS name FROM users;
++----+-------+
+| id | name  |-- извлекает 5 символов с 1 позиции
++----+-------+
+|  1 | Генна |
+|  2 | Натал |
+|  3 | Алекс |
+|  4 | Серге |
+|  5 | Иван  |
+|  6 | Мария |
++----+-------+
+
+--Объединение строк:
+SELECT id, CONCAT(name, ' ', TIMESTAMPDIFF(YEAR, birthday_at, NOW())) AS name FROM users;
++----+--------------+
+| id | name         |
++----+--------------+
+|  1 | Геннадий 29  |
+|  2 | Наталья 35   |
+|  3 | Александр 34 |
+|  4 | Сергей 32    |
+|  5 | Иван 22      |
+|  6 | Мария 11     |
++----+--------------+
+-- к строке с именем, добавили строку с вычисленным возрастом.
+
+
+
+-- #Логические функции
+SELECT if(true, 'истина', 'ложь'), if(false, 'истина', 'ложь');
++----------------------------+-----------------------------+
+| if(true, 'истина', 'ложь') | if(false, 'истина', 'ложь') |
++----------------------------+-----------------------------+
+| истина                     | ложь                        |
++----------------------------+-----------------------------+
+
+-- вычислим совершеннолетие пользователей:
+SELECT name, 
+	IF(TIMESTAMPDIFF(YEAR, birthday_at, NOW()) >= 18,
+		'совершеннолетний',
+		'несовершеннолетний'
+		)AS status
+	FROM users;
++-----------+--------------------+
+| name      | status             |
++-----------+--------------------+
+| Геннадий  | совершеннолетний   |
+| Наталья   | совершеннолетний   |
+| Александр | совершеннолетний   |
+| Сергей    | совершеннолетний   |
+| Иван      | совершеннолетний   |
+| Мария     | несовершеннолетний |
++-----------+--------------------+
+
+-- #CASE оператор
+
+-- создадим таблицу с цветами радуги:
+DROP TABLE IF EXISTS rainbow;
+CREATE TABLE rainbow (
+  id SERIAL PRIMARY KEY,
+  color VARCHAR(255)
+) COMMENT = 'Цвета радуги';
+
+INSERT INTO
+  rainbow (color)
+VALUES
+  ('red'),
+  ('orange'),
+  ('yellow'),
+  ('green'),
+  ('blue'),
+  ('indigo'),
+  ('violet');
+
+SELECT * FROM rainbow;
++----+--------+
+| id | color  |
++----+--------+
+|  1 | red    |
+|  2 | orange |
+|  3 | yellow |
+|  4 | green  |
+|  5 | blue   |
+|  6 | indigo |
+|  7 | violet |
++----+--------+
+
+
+-- Если нужно заменить английские названия русскими, можно воспользоваться CASE
+SELECT id,
+  CASE
+    WHEN color = 'red' THEN 'красный'
+    WHEN color = 'orange' THEN 'оранжевый'
+    WHEN color = 'yellow' THEN 'желтый'
+    WHEN color = 'green' THEN 'зеленый'
+    WHEN color = 'blue' THEN 'голубой'
+    WHEN color = 'indigo' THEN 'синий'
+    ELSE 'фиолетовый'
+  END AS russian
+FROM
+  rainbow;
+
++----+------------+
+| id | russian    |
++----+------------+
+|  1 | красный    |
+|  2 | оранжевый  |
+|  3 | желтый     |
+|  4 | зеленый    |
+|  5 | голубой    |
+|  6 | синий      |
+|  7 | фиолетовый |
++----+------------+
+
+
+
+-- #Вспомогательные функции
+
+SELECT INET_ATON('62.145.69.10'), INET_ATON('127.0.0.1');
++---------------------------+------------------------+
+| INET_ATON('62.145.69.10') | INET_ATON('127.0.0.1') |
++---------------------------+------------------------+
+|                1049707786 |             2130706433 |
++---------------------------+------------------------+
+-- принимает IP адрес, и возвращает целое число.
+
+
+SELECT INET_NTOA('1049707786'), INET_NTOA('2130706433');
++-------------------------+-------------------------+
+| INET_NTOA('1049707786') | INET_NTOA('2130706433') |
++-------------------------+-------------------------+
+| 62.145.69.10            | 127.0.0.1               |
++-------------------------+-------------------------+
+--решает обратную задачу
+
+
+SELECT UUID();
++--------------------------------------+
+| UUID()                               |
++--------------------------------------+
+| 4321bc7e-6f82-11ea-86d3-50e54931ce2d | --: b4d19800-6f82-11ea-86d3-50e54931ce2d
++--------------------------------------+
+-- Возвращает универсальный уникальный идентификатор (UUID) будет всегда разным.
+
+SELECT UUID_SHORT(); --: 98652920005787648
+
+
+
+---< Агрегация данных >---
+
+--- Группировка данных
+--- Агрегационные функции
+--- Специальные возможности GROUP BY
+
+
+--- #Группировка данных
+
+SELECT catalog_id FROM products GROUP BY catalog_id;
++------------+
+| catalog_id |
++------------+
+|          1 |
+|          2 |
++------------+
+
+-- разобьём пользователей на группы родившихся в разные десятилетия:
+SELECT id, name, SUBSTRING(birthday_at, 1, 3) AS decade FROM users;
++----+-----------+--------+
+| id | name      | decade |
++----+-----------+--------+
+|  1 | Геннадий  | 199    | -- отбросим единицы годов
+|  2 | Наталья   | 198    |
+|  3 | Александр | 198    |
+|  4 | Сергей    | 198    |
+|  5 | Иван      | 199    |
+|  6 | Мария     | 200    |
++----+-----------+--------+
+
+SELECT id, name, SUBSTRING(birthday_at, 1, 3) AS decade FROM users order by decade;
++----+-----------+--------+
+| id | name      | decade |
++----+-----------+--------+
+|  2 | Наталья   | 198    | -- отсортируем по декадам
+|  3 | Александр | 198    |
+|  4 | Сергей    | 198    |
+|  1 | Геннадий  | 199    |
+|  5 | Иван      | 199    |
+|  6 | Мария     | 200    |
++----+-----------+--------+
+
+SELECT SUBSTRING(birthday_at, 1, 3) AS decade FROM users GROUP BY decade;  
++--------+
+| decade |
++--------+
+| 198    |
+| 199    |
+| 200    |
++--------+                                                                       
+-- при этом другие столбцы не выведет
+
+
+SELECT COUNT(*) total, SUBSTRING(birthday_at, 1, 3) AS decade FROM users GROUP BY decade order by total;
++-------+--------+
+| total | decade |
++-------+--------+
+|     1 | 200    | --  COUNT(*) считает количество сгруппированных элементов
+|     2 | 199    |
+|     3 | 198    |
++-------+--------+
+-- отсортировали по значениям количества эл-тов в группах
+-- причём нельзя располагать ORDER BY раньше GROUP BY. 
+
+SELECT COUNT(*) FROM users; -- можно применить ко всем элементам таблицы
++----------+
+| COUNT(*) |
++----------+
+|        6 |
++----------+
+
+-- посмотреть содержимое групп можно так:
+SELECT GROUP_CONCAT(name), SUBSTRING(birthday_at, 1, 3) AS decade FROM users GROUP BY decade;
++--------------------------+--------+
+| GROUP_CONCAT(name)       | decade |
++--------------------------+--------+
+| Наталья,Александр,Сергей | 198    |-- конкотенирует строки одной группы
+| Геннадий,Иван            | 199    |
+| Мария                    | 200    |
++--------------------------+--------+
+-- GROUP_CONCAT() - Эта функция возвращает строковый результат с объединенными ненулевыми значениями из группы. Возвращает NULL, если нет ненулевых значений.
+
+SELECT GROUP_CONCAT(name SEPARATOR '; '), SUBSTRING(birthday_at, 1, 3) AS decade FROM users GROUP BY decade;
++-----------------------------------+--------+
+| GROUP_CONCAT(name SEPARATOR '; ') | decade |
++-----------------------------------+--------+
+| Наталья; Александр; Сергей        | 198    | -- можно менять разделитель
+| Геннадий; Иван                    | 199    |
+| Мария                             | 200    |
++-----------------------------------+--------+
+
+SELECT GROUP_CONCAT(name order by name DESC SEPARATOR '; '), SUBSTRING(birthday_at, 1, 3) AS decade FROM users GROUP BY decade;
++------------------------------------------------------+--------+
+| GROUP_CONCAT(name order by name DESC SEPARATOR '; ') | decade |
++------------------------------------------------------+--------+
+| Сергей; Наталья; Александр                           | 198    |--можно ещё и сортировать
+| Иван; Геннадий                                       | 199    |
+| Мария                                                | 200    |
++------------------------------------------------------+--------+
+
+-- GROUP_CONCAT() может извлечь максимум 1000 эл-тов если не поменять настройки сервера
+
+
+-- #Агрегационные функции
+
+--#COUNT()
+COUNT() -- является агрегационной, т.к. меняет своё значение при использовании в GROUP BY
+
+SELECT COUNT(id) FROM catalogs;
+
++-----------+
+| COUNT(id) |
++-----------+ 
+|         5 |-- возвращает количество эл-тов таблицы отличных от NULL
++-----------+
+-- При использовании COUNT(*) вернёт количество строк (даже null)
+
+-- есть таблица:
+mysql> SELECT * FROM tbl;
++----+-------+
+| id | VALUE |
++----+-------+
+|  1 |   230 |
+|  2 |  NULL |
+|  3 |   405 |
+|  4 |  NULL |
++----+-------+
+
+--применим COUNT() к обоим столбцам
+mysql> SELECT COUNT(id), COUNT(VALUE) FROM tbl;
++-----------+--------------+
+| COUNT(id) | COUNT(VALUE) |
++-----------+--------------+
+|         4 |            2 |-- значения отличаются, т.к. COUNT() игнорирует NULL поля
++-----------+--------------+
+
+SELECT COUNT(*) FROM tbl;
++----------+
+| COUNT(*) |
++----------+
+|        4 | -- значения NULL не влияют на результат
++----------+
+
+
+--подсчитаем количество элементов в таблице products
+SELECT
+	COUNT(id) AS total_ids, 
+	COUNT(catalog_id) AS total_catalog_ids 
+FROM 
+	products;
++-----------+-------------------+
+| total_ids | total_catalog_ids |
++-----------+-------------------+
+|         7 |                 7 |
++-----------+-------------------+
+
+--лднако если добавим DISTINCT:
+SELECT
+	COUNT(DISTINCT id) AS total_ids, 
+	COUNT(DISTINCT catalog_id) AS total_catalog_ids 
+FROM 
+	products;
++-----------+-------------------+
+| total_ids | total_catalog_ids |
++-----------+-------------------+
+|         7 |                 2 | -- подсчитались только уникальные значения
++-----------+-------------------+
+
+-- #MIN #MAX - извлекают минимальные и максимальные значения
+SELECT
+	MIN(price) AS MIN,
+	MAX(price) AS MAX 
+FROM 
+	products;
++---------+----------+
+| MIN     | MAX      |
++---------+----------+
+| 4780.00 | 19310.00 | -- получаем минимальную и максимальную цену столбца
++---------+----------+
+
+/* при группировке по полю catalog_id можем получать миниматьную и максимальную цену 
+каждого из разделов каталога*/
+SELECT
+	catalog_id,
+	MIN(price) AS MIN,
+	MAX(price) AS MAX 
+FROM 
+	products
+GROUP BY
+	catalog_id;
++------------+---------+----------+
+| catalog_id | MIN     | MAX      |
++------------+---------+----------+
+|          1 | 4780.00 | 12700.00 |
+|          2 | 4790.00 | 19310.00 |
++------------+---------+----------+
+/* агрегационные функции применяются только после слова SELECT
+нельзя выполнить SELECT * FROM products WHERE price = MAX(price); лучше использовать:
+SELECT id, name, price FROM products order by price DESC LIMIT 1; если мы хотим найти максимальную цену */
+
+
+-- #AVG - среднее значение
+
+SELECT AVG(price) FROM products;
++-------------+
+| AVG(price)  |
++-------------+
+| 8807.142857 |
++-------------+
+
+SELECT ROUND(AVG(price), 2) FROM products; 
++-------------------+
+| ROUND(AVG(price)) |
++-------------------+
+|           8807.14 | -- округлили
++-------------------+
+
+SELECT 
+	catalog_id, 
+	ROUND(AVG(price), 2) AS price 
+FROM products 
+GROUP BY catalog_id;
++------------+---------+
+| catalog_id | price   |
++------------+---------+
+|          1 | 8122.50 |
+|          2 | 9720.00 |
++------------+---------+
+
+-- внутри функции допускается вычислять значения
+SELECT 
+	catalog_id, 
+	ROUND(AVG(price * 1.2), 2) AS price 
+FROM products 
+GROUP BY catalog_id;
++------------+----------+
+| catalog_id | price    |
++------------+----------+
+|          1 |  9747.00 |
+|          2 | 11664.00 |
++------------+----------+
+
+-- #SUM - сумма значений всего столбца
+SELECT SUM(price) FROM products;
++------------+
+| SUM(price) |
++------------+
+|   61650.00 |
++------------+
+
+SELECT catalog_id, SUM(price) FROM products GROUP BY catalog_id;
++------------+------------+
+| catalog_id | SUM(price) |
++------------+------------+
+|          1 |   32490.00 | -- сумма в каждой категории
+|          2 |   29160.00 |
++------------+------------+
+
+-- #Специальные возможности GROUP BY
+SELECT 
+	GROUP_CONCAT(name), 
+	SUBSTRING(birthday_at, 1, 3) AS decade 
+FROM users 
+GROUP BY decade;
++-----------------------------------+--------+
+| GROUP_CONCAT(name SEPARATOR '; ') | decade |
++-----------------------------------+--------+
+| Наталья; Александр; Сергей        | 198    | -- можно менять разделитель
+| Геннадий; Иван                    | 199    |
+| Мария                             | 200    |
++-----------------------------------+--------+
+
+SELECT 
+	COUNT(*) AS total, 
+	SUBSTRING(birthday_at, 1, 3) AS decade 
+FROM users 
+GROUP BY decade;
++-------+--------+
+| total | decade |
++-------+--------+
+|     3 | 198    |
+|     2 | 199    |
+|     1 | 200    |
++-------+--------+
+ 
+/*если нам нужно выбрать группы где, например, более 2-х записей, то использование WHERE 
+ приведёт к ошибке. Для решения этой проблемы используется слово:
+ 
+ #HEAVING
+ */
+SELECT 
+	COUNT(*) AS total, 
+	SUBSTRING(birthday_at, 1, 3) AS decade 
+FROM 
+	users 
+GROUP BY 
+	decade
+HAVING 
+	total>= 2;
++-------+--------+
+| total | decade |
++-------+--------+
+|     3 | 198    |
+|     2 | 199    |
++-------+--------+
+
+-- допускается использование HAVING без использования GROUP BY
+SELECT 
+	*
+FROM 
+	users 
+HAVING 
+	birthday_at >= '1990-01-01';
++----+----------+-------------+---------------------+---------------------+
+| id | name     | birthday_at | created_at          | updated_at          |
++----+----------+-------------+---------------------+---------------------+
+|  1 | Геннадий | 1990-10-05  | 2020-03-24 17:11:48 | 2020-03-24 17:11:48 |
+|  5 | Иван     | 1998-01-12  | 2020-03-24 17:11:48 | 2020-03-24 17:11:48 |
+|  6 | Мария    | 2006-08-29  | 2020-03-24 17:11:48 | 2020-03-27 11:18:58 |
++----+----------+-------------+---------------------+---------------------+
+--вывели пользователей родившиеся после 90-го года
+-- в этом случае каждая строка таблицы рассматривается как группа
+
+
+
+-- добавим идентичные записи в таблицу products
++----+-------------------------+---------------------------------------------------------+
+| id | name                    | description                                             |
++----+-------------------------+---------------------------------------------------------+
+|  1 | Intel Core i3-8100      | Процессор Intel.                                        |
+|  2 | Intel Core i5-7400      | Процессор Intel.                                        |
+|  3 | AMD FX-8320E            | Процессор AMD.                                          |
+|  4 | AMD FX-8320             | Процессор AMD.                                          |
+|  5 | ASUS ROG MAXIMUS X HERO | ASUS ROG MAXIMUS X HERO, Z370,Socket 1151-V2, DDR4, ATX |
+|  6 | Gigabyte H310M S2H      | Gigabyte H310M S2H, H310, Socket 1151-V2, DDR4, mATX    |
+|  7 | MSI B250M GAMING PRO    | MSI B250M GAMING PRO, B250, Socket 1151, DDR4, mATX     |
+|  8 | Intel Core i3-8100      | Процессор Intel.                                        |
+|  9 | Intel Core i5-7400      | Процессор Intel.                                        |
+| 10 | AMD FX-8320E            | Процессор AMD.                                          |
+| 11 | AMD FX-8320             | Процессор AMD.                                          |
+| 12 | ASUS ROG MAXIMUS X HERO | ASUS ROG MAXIMUS X HERO, Z370,Socket 1151-V2, DDR4, ATX |
+| 13 | Gigabyte H310M S2H      | Gigabyte H310M S2H, H310, Socket 1151-V2, DDR4, mATX    |
+| 14 | MSI B250M GAMING PRO    | MSI B250M GAMING PRO, B250, Socket 1151, DDR4, mATX     |
++----+-------------------------+---------------------------------------------------------+
+
+-- существуют множество способов избавиться от дубликатов. (пока не знакомы с JSON соединениями, и многотабличным запросом DELETE), решим задачу через промежуточную таблицу:
+
+-- Запрос на извлечение записей которые пойдут в эту таблицу:
+SELECT 
+	name, CONCAT(SUBSTRING(description, 1, 14), ' ...') AS description , price, catalog_id
+FROM 
+	products
+GROUP BY
+	name, description, price, catalog_id;
++-------------------------+--------------------+----------+------------+
+| name                    | description        | price    | catalog_id |
++-------------------------+--------------------+----------+------------+
+| AMD FX-8320             | Процессор AMD. ... |  7120.00 |          1 |
+| AMD FX-8320E            | Процессор AMD. ... |  4780.00 |          1 |
+| ASUS ROG MAXIMUS X HERO | ASUS ROG MAXIM ... | 19310.00 |          2 |
+| Gigabyte H310M S2H      | Gigabyte H310M ... |  4790.00 |          2 |
+| Intel Core i3-8100      | Процессор Inte ... |  7890.00 |          1 |
+| Intel Core i5-7400      | Процессор Inte ... | 12700.00 |          1 |
+| MSI B250M GAMING PRO    | MSI B250M GAMI ... |  5060.00 |          2 |
++-------------------------+--------------------+----------+------------+
+-- вместо 14 записей остаются 7 уникальных
+-- GROUP BY может принимать несколько столбцов. Чтобы запись попала в группу, все поля должны совпадать.
+
+--Создадим новую таблицу products_new, точно такую, как products
++------------+---------------------+------+-----+-------------------+-----------------+
+| Field      | Type                | Null | Key | Default           | Extra           |
++------------+---------------------+------+-----+-------------------+-----------------+
+| id         | bigint(20) unsigned | NO   | PRI | NULL              | auto_inc...     |
+| name       | varchar(255)        | YES  |     | NULL              |                 |
+| desription | text                | YES  |     | NULL              |                 |
+| price      | decimal(11,2)       | YES  |     | NULL              |                 |
+| catalog_id | int(10) unsigned    | YES  | MUL | NULL              |                 |
+| created_at | datetime            | YES  |     | CURRENT_TIMESTAMP |                 |
+| updated_at | datetime            | YES  |     | CURRENT_TIMESTAMP |on update CURR.. |
++------------+---------------------+------+-----+-------------------+-----------------+
+
+-- составим запрос который будет вставлят в новую таблицу только уникальные данные
+INSERT INTO
+	products_new
+SELECT 
+	NULL, name, description , price, catalog_id, NOW(), NOW()
+FROM     -- поля id, created_at, updated_at не входят в групповой запрос. Заменили.
+	products
+GROUP BY
+	name, description, price, catalog_id;
+	
+-- получилась промежуточная таблица:	
+SELECT 
+	name, CONCAT(SUBSTRING(description, 1, 14), ' ...') AS description , price, catalog_id
+FROM 
+	products_new;
++-------------------------+--------------------+----------+------------+
+| name                    | description        | price    | catalog_id |
++-------------------------+--------------------+----------+------------+
+| AMD FX-8320             | Процессор AMD. ... |  7120.00 |          1 |
+| AMD FX-8320E            | Процессор AMD. ... |  4780.00 |          1 |
+| ASUS ROG MAXIMUS X HERO | ASUS ROG MAXIM ... | 19310.00 |          2 |
+| Gigabyte H310M S2H      | Gigabyte H310M ... |  4790.00 |          2 |
+| Intel Core i3-8100      | Процессор Inte ... |  7890.00 |          1 |
+| Intel Core i5-7400      | Процессор Inte ... | 12700.00 |          1 |
+| MSI B250M GAMING PRO    | MSI B250M GAMI ... |  5060.00 |          2 |
++-------------------------+--------------------+----------+------------+
+
+-- теперь можно уничтожить первую таблицу:
+DROP TABLE products;
+-- и переименуем products_new в products:
+ALTER TABLE products_new RENAME products;
+-- посмотрим содержимое базы данных:
++----------------------+
+| Tables_in_geekbrains |
++----------------------+
+| catalogs             |
+| discounts            |
+| distances            |
+| orders               |
+| orders_products      |
+| products             |
+| rainbow              |
+| storehouses          |
+| storehouses_products |
+| tbl                  |
+| triangles            |
+| users                |
++----------------------+
+
+-- и посомтрим содержимое таблицы products:
+SELECT 
+	name, CONCAT(SUBSTRING(description, 1, 14), ' ...') AS description , price, catalog_id
+FROM 
+	products;
++-------------------------+--------------------+----------+------------+
+| name                    | description        | price    | catalog_id |
++-------------------------+--------------------+----------+------------+
+| AMD FX-8320             | Процессор AMD. ... |  7120.00 |          1 |
+| AMD FX-8320E            | Процессор AMD. ... |  4780.00 |          1 |
+| ASUS ROG MAXIMUS X HERO | ASUS ROG MAXIM ... | 19310.00 |          2 |
+| Gigabyte H310M S2H      | Gigabyte H310M ... |  4790.00 |          2 |
+| Intel Core i3-8100      | Процессор Inte ... |  7890.00 |          1 |
+| Intel Core i5-7400      | Процессор Inte ... | 12700.00 |          1 |
+| MSI B250M GAMING PRO    | MSI B250M GAMI ... |  5060.00 |          2 |
++-------------------------+--------------------+----------+------------+	
+-- мы избавились от дублирующих записей
+
+
+-- Для группировки можно использовать вычисляемые значения 
+
+--Добавим несколько пользователей
+INSERTinto users (name, birthday_at) VALUES 
+	('Светлана','1988-02-04'),
+	('Олег','1998-03-20'),
+	('Юлия','2006-07-12');
+	
+SELECT name, birthday_at FROM users order by birthday_at;
++-----------+-------------+
+| name      | birthday_at |
++-----------+-------------+
+| Наталья   | 1984-11-12  |
+| Александр | 1985-05-20  |
+| Светлана  | 1988-02-04  | -- Родились в 1988 году
+| Сергей    | 1988-02-14  | -- Родились в 1988 году
+| Геннадий  | 1990-10-05  |
+| Иван      | 1998-01-12  | -- Родились в 1998 году
+| Олег      | 1998-03-20  | -- Родились в 1998 году
+| Юлия      | 2006-07-12  | --
+| Мария     | 2006-08-29  | --
++-----------+-------------+
+
+SELECT YEAR(birthday_at) FROM users order by birthday_at;
++-------------------+
+| YEAR(birthday_at) | --вывели только года рождения
++-------------------+
+|              1984 |
+|              1985 |
+|              1988 |
+|              1988 |
+|              1990 |
+|              1998 |
+|              1998 |
+|              2006 |
+|              2006 |
++-------------------+
+
+SELECT 
+	MAX(name), -- необходимо агрегационное значение, чтобы не получить ошибку
+	YEAR(birthday_at) AS birthday_year
+FROM users 
+GROUP BY birthday_year
+order by birthday_year;
++-----------+---------------+
+| MAX(name) | birthday_year |
++-----------+---------------+
+| Наталья   |          1984 |
+| Александр |          1985 |
+| Сергей    |          1988 |
+| Геннадий  |          1990 |
+| Олег      |          1998 |
+| Юлия      |          2006 |
++-----------+---------------+
+
+SELECT 
+	ANY_VALUE(name), -- лучше применить так. Случайное значение из группы
+	YEAR(birthday_at) AS birthday_year
+FROM users 
+GROUP BY birthday_year
+order by birthday_year;
++-----------------+---------------+
+| ANY_VALUE(name) | birthday_year |
++-----------------+---------------+
+| Наталья         |          1984 |
+| Александр       |          1985 |
+| Сергей          |          1988 |
+| Геннадий        |          1990 |
+| Иван            |          1998 |
+| Мария           |          2006 |
++-----------------+---------------+
+
+
+-- Подсчитаем количество пользователей по десятилетиям:
+SELECT 
+	SUBSTRING(birthday_at, 1, 3) AS decade, 
+	COUNT(*)
+FROM users 
+GROUP BY decade;
++--------+----------+
+| decade | COUNT(*) |
++--------+----------+
+| 198    |        4 |
+| 199    |        3 |
+| 200    |        2 |
++--------+----------+
+
+--с помошью #WITH ROOLUP получим результирующую строку:
+SELECT 
+	SUBSTRING(birthday_at, 1, 3) AS decade, 
+	COUNT(*)
+FROM users 
+GROUP BY decade
+WITH ROLLUP;
++--------+----------+
+| decade | COUNT(*) |
++--------+----------+
+| 198    |        4 |
+| 199    |        3 |
+| 200    |        2 |
+| NULL   |        9 |
++--------+----------+
+--Добавление модификатора WITH ROLLUP в предложение GROUP BY приводит к тому, что запрос создает еще одну (суперагрегированную) строку, которая показывает общий итог по всем значениям.
+
+--В MySQL есть GROUPING... нужно почитать. Можно заменить значение NULL (Например: Итог). Если до него есть значения в столбце, то принимает значение 0. Применяя конструкцию IF можно вывести необходимые данные.
+ 
+ 
+ 
+ 
+_________________________________________________________________________________________
+
+Урок 6. Вебинар. Операторы, фильтрация, сортировка и ограничение. Агрегация данных----------------------------------------------
+--Важное объявление!
+Ссылка на стрим занятия: https://youtu.be/fwZQJ9bkHp4
+
+--Полезные ссылки:
+--Домашнее задание:
+Практическое задание по теме “Операторы, фильтрация, сортировка и ограничение. Агрегация данных”. Работаем с БД vk и данными, которые вы сгенерировали ранее:
+1. Пусть задан некоторый пользователь. Из всех друзей этого пользователя найдите человека, который больше всех общался с нашим пользователем.
+2. Подсчитать общее количество лайков, которые получили пользователи младше 10 лет..
+3. Определить кто больше поставил лайков (всего): мужчины или женщины.
+
+-- Вложенные запросы
+
+SELECT
+	firstname,
+	lastname,
+	(SELECT hometown FROM profiles  WHERE user_id = users.id) AS 'city',
+	(SELECT filename from media where id = 
+		(select photo_id from profiles where user_id = 3)
+	) as 'main_photo'		
+FROM users
+;
+-- вложенный запрос из внешней таблицы. Скореллированный запрос.
+-- не стоит увлекаться, очень затратные
+
+--еще вариант:
+select filename, media_type_id
+from media m2 where user_id = (select id from users where email = 'asdajh@mail.ru')
+and media_type_id = (select id from media_types where name = 'photo');
+
+
+select  * 
+from media m 
+where 
+	user_id  = 1 and filename like '%.mp4' 
+	or filename like '%.avi';
+-- and более жадный, по этому условие %.avi может выполниться, даже если user_id <> 1
+-- по этому:
+where 
+	user_id  = 1 and (filename like '%.mp4' or filename like '%.avi')
+;
+	
+-- подсчитываем количество фотографий пользователя:
+select count(*)
+from media 
+where user_id = (select id from users where email = 'asdajh@mail.ru')
+	and media_type_id = (select id from media_types where name = 'photo');
+
+-- аггрегирующие функции avg, max, min, count, sum
+select 
+	count(*),
+	media_type_id,
+	(select name from media_types where id = media.media_type_id) as type_name
+	from media
+	group by media_type_id;
++----------+---------------+------------+
+| count(*) | media_type_id | type_name  |
++----------+---------------+------------+
+|       20 |             1 | photo      |
+|       20 |             2 | video      |
+|       20 |             3 | music      |
+|       20 |             4 | post       |
++----------+---------------+------------+
+
+
+-- сгруппируем по месяцам:
+select 
+count(*),
+month(created_at),
+monthname(created_at)
+from media
+group by month(created_at)  ;
+
+_________________________________________________________________________________________
+
+----------------------------------------------
+--Важное объявление!
+--Полезные ссылки:
+--Домашнее задание:
+
+_________________________________________________________________________________________
+
+----------------------------------------------
+--Важное объявление!
+--Полезные ссылки:
+--Домашнее задание:
+
+_________________________________________________________________________________________
+
+----------------------------------------------
+--Важное объявление!
+--Полезные ссылки:
+--Домашнее задание:
+
+_________________________________________________________________________________________
+
+----------------------------------------------
+--Важное объявление!
+--Полезные ссылки:
+--Домашнее задание:
+
+_________________________________________________________________________________________
+
+----------------------------------------------
+--Важное объявление!
+--Полезные ссылки:
+--Домашнее задание:
+
+_________________________________________________________________________________________
+
+----------------------------------------------
+--Важное объявление!
+--Полезные ссылки:
+--Домашнее задание:
+
+

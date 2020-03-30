@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lesson-1 Practice</title>
+</head>
+
+<body>
+    <header>
+        <button class="cart-button">Корзина</button>
+    </header>
+    <main>
+        <div class="goods"></div>
+    </main>
+    <script>
+        const goods = [
+            { name: 'iPhone X', price: 70000 },
+            { name: 'Защитное стекло', price: 1000 },
+            { name: 'Бампер', price: 3000 }
+        ];
+        const renderItem = ({name, price}) => `<div class="item"><h2>${name}</h2><span>${price}</span></div>`;
+        
+        const renderList = items => {
+            const itemHtmls = items.map(renderItem); // Для каждого элемента массива renderList вызываем функцию renderItem отриссовывая элементы.
+            document.querySelector('.goods').innerHTML = itemHtmls;
+        }
+        renderList(goods);
+        
+
+
+    </script>
+
+</body>
+
+</html>
