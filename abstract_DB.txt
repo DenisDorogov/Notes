@@ -2789,20 +2789,234 @@ select 2 = (
 	where id = 5
 	) as 'is admin';
 
-_________________________________________________________________________________________
 
-----------------------------------------------
-----------------------------------------------
---Важное объявление!
---Полезные ссылки:
---Домашнее задание:
 
 _________________________________________________________________________________________
 
-----------------------------------------------
+Урок 7. Видеоурок. Сложные запросы----------------------------------------------
+
 --Важное объявление!
 --Полезные ссылки:
 --Домашнее задание:
+1. Составьте список пользователей users, которые осуществили хотя бы один заказ orders в интернет магазине.
+2. Выведите список товаров products и разделов catalogs, который соответствует товару.
+3. (по желанию) Пусть имеется таблица рейсов flights (id, from, to) и таблица городов cities (label, name). Поля from, to и label содержат английские названия городов, поле name — русское. Выведите список рейсов flights с русскими названиями городов.
+id|from    |to     |		|label   |name    |
+--|--------|-------|		|--------|--------|
+ 1|moskow  |omsk   |		|moskow  |Москва  |
+ 2|novgorod|kazan  |		|novgorod|Новгород|
+ 3|irkutsk |moskow |		|irkutsk |Иркутск |
+ 4|omsk    |irkutsk|		|omsk    |Омск    |
+ 5|moskow  |kazan  |		|kazan   |Казань  |
+ 
+
+
+_________________________________________________________________________________________
+
+Урок 8. Вебинар. Сложные запросы----------------------------------------------
+--Важное объявление!
+--Полезные ссылки:
+Ссылки на видео с разбором ДЗ:
+Сложные запросы
+https://uploads.hb.cldmail.ru/chaptervideo/1137060/attachment/52e50d4383df28959fe6b17f9a1f0a92.mp4
+--Домашнее задание:
+
+
+INNER JOIN - соединяет только соответствующие друг другу строки двух таблиц.
+(только те пользователи и те сообщения, которые эти пользователи написали)
+LEFT [OUTER] JOIN - соединяет всю левую таблицу, с соответствующей её частью правой.
+(все пользователи, и сообщения, которые часть из пользователей писала)
+RIGHT [OUTER] JOIN - аналогично для правой
+
+FULL [OUTER] JOIN - объединяет все поля обеих таблиц. MySQL не умеет этого делать.
+-- пример как сделать ниже #FULL JOIN
+
+
+select * from users, messages; -- CROSS JOIN запрос. Каждое поле одной таблицы соединяется со всеми полями другой таблицы. Получается таблица размером t1 * t2 
+select * from users join messages; -- тоже самое.
+
+select * from users join messages where users.id = messages.from_user_id;
+-- результат становится меньше, но это всё равно cross запрос.
+
+select * from users [INNER] join messages on users.id = messages.from_user_id;
+-- теперь это правильный inner запрос. on вместо where делает этот запрос inner автоматически, по этому не обязательно слово inner
+
+
+
+
+-- Сложные запросы с использованием JOIN
+use vk;
+
+-- Выборка данных по пользователю
+SELECT 
+	firstname, lastname, email, phone, gender, birthday, hometown
+  FROM users
+    JOIN profiles ON users.id = profiles.user_id
+  WHERE users.id = 1;
+  
+-- можно с помощью вложенных запросов. Но это ресурсозатратно:
+SELECT 
+	firstname,
+	lastname,
+	(SELECT hometown FROM profiles WHERE user_id = users.id) AS sity,
+	(SELECT filename FROM media WHERE id = 
+		(SELECT photo_id FROM profiles WHERE user_id = users.id)
+	) AS main_photo
+FROM users;
+
+-- лучше использовать объединение таблиц:	
+SELECT 
+	firstname, lastname, hometown, filename
+  FROM users
+    JOIN profiles ON users.id = profiles.user_id
+    JOIN media ON media.id = profiles.photo_id;
+
+
+-- Выборка новостей самого пользователя
+SELECT media.user_id, media.body, media.created_at
+  FROM media
+    JOIN users ON media.user_id = users.id     
+  WHERE media.user_id = 1;
+  
+  
+-- Сообщения к пользователю
+SELECT messages.body, firstname, lastname, messages.created_at
+  FROM messages
+    JOIN users u ON u.id = messages.to_user_id
+  where u.id = 1;
+  
+  
+-- Сообщения от пользователя
+SELECT body, firstname, lastname, created_at
+  FROM messages
+    JOIN users  ON users.id = messages.from_user_id
+    where users.id = 1;
+body          |firstname|lastname|created_at           |
+--------------|---------|--------|---------------------|
+Text messag...|Emerald  |Bruen   |2013-06-09 20:00:09.0|
+Text messag...|Emerald  |Bruen   |1998-12-19 12:45:21.0|
+              |         |        |                     |
+
+SELECT count(*) cnt, firstname, lastname 
+  FROM messages
+    JOIN users  ON users.id = messages.from_user_id
+    GROUP BY  users.id;
+   ORDER BY cnt DESC;	
+cnt|firstname |lastname   |
+---|----------|-----------|
+ 10|Emerald   |Bruen      |
+ 10|Kristopher|Larson     |
+ 10|Rosendo   |Glover     |
+   |          |           |
+   
+
+-- выберем пользователей у которых нет сообщений  
+SELECT u.* 
+  FROM messages AS m
+    RIGHT OUTER JOIN users AS u  ON u.id = m.from_user_id
+    WHERE m.id IS null -- ...=null не прокатит. В sql null тоже что undefined
+   ORDER BY m.id;
+
+id|firstname|lastname|email                |phone|
+--|---------|--------|---------------------|-----|
+10|Wilmer   |Douglas |fthompson@example.net|   29|
+
+
+  -- #FULL JOIN
+-- можно объединить LEFT и RIGHT запросы:
+SELECT u.*, m.*
+  FROM users AS u
+    LEFT OUTER JOIN messages AS m  ON u.id = m.from_user_id
+    UNION 
+ SELECT u.*, m.*
+  FROM users AS u
+    RIGHT OUTER JOIN messages AS m  ON u.id = m.from_user_id;
+   
+   
+-- Количество друзей у всех пользователей
+SELECT firstname, lastname, COUNT(*) AS total_friends
+  FROM users
+    JOIN friend_requests ON (users.id = friend_requests.initiator_user_id or users.id = friend_requests.target_user_id)
+  where friend_requests.status = 'approved'
+  GROUP BY users.id;
+ 
+-- Количество друзей у всех пользователей с сортировкой
+SELECT firstname, lastname, COUNT(*) AS total_friends
+  FROM users 
+    JOIN friend_requests ON (users.id = friend_requests.initiator_user_id or users.id = friend_requests.target_user_id)
+  where friend_requests.status = 'approved'
+  GROUP BY users.id
+  ORDER BY total_friends DESC;
+
+
+-- Выборка новостей друзей пользователя
+select 
+ media.*
+  FROM media
+    JOIN friend_requests fr ON media.user_id = fr.target_user_id
+    JOIN users ON fr.initiator_user_id = users.id -- кому я отправлял заявку в друзья
+  WHERE users.id = 1
+  	and fr.status = 'approved'
+UNION
+select 
+ media.*
+  FROM media
+    JOIN friend_requests fr ON media.user_id = fr.initiator_user_id
+    JOIN users ON fr.target_user_id = users.id   -- кто мне отправлял заявку в друзья
+  WHERE users.id = 1
+  	and fr.status = 'approved'
+order by created_at desc; 
+
+-- Список медиафайлов пользователя с количеством лайков
+SELECT media.filename,
+  media_types.name,
+  COUNT(*) AS total_likes,
+  CONCAT(firstname, ' ', lastname) AS owner
+  FROM media
+    JOIN media_types ON media.media_type_id = media_types.id
+    JOIN likes ON media.id = likes.media_id
+    JOIN users ON users.id = media.user_id
+  WHERE users.id = 1
+  GROUP BY media.id;
+  
+-- Количество групп у пользователей
+SELECT firstname, lastname, COUNT(*) AS total_communities
+  FROM users
+    JOIN users_communities ON users.id = users_communities.user_id
+  GROUP BY users.id
+  order by count(*) desc; -- но лучше order by total_communities desc;
+
+-- Среднее количество групп у всех пользователей    
+SELECT AVG(total_communities) AS average_communities
+  FROM (
+    SELECT firstname, lastname, COUNT(*) AS total_communities
+      FROM users
+        JOIN users_communities ON users.id = users_communities.user_id
+      GROUP BY users.id
+  ) AS list;
+  
+-- 3 пользователей с наибольшим количеством лайков за медиафайлы
+SELECT 
+	firstname, lastname,
+	m.filename,
+	count(*) as likes_count
+  FROM users
+    JOIN media ON users.id = media.user_id
+    JOIN likes ON media.id = likes.media_id
+  GROUP BY users.id
+  ORDER BY likes_count DESC
+  LIMIT 3;
+
+-- количество пользователей в сообществах
+select 
+	count(*)
+	, c.name
+from vk.users_communities uc
+join communities c on uc.community_id = c.id
+group by c.id
+
+
+
 
 _________________________________________________________________________________________
 
