@@ -18,11 +18,20 @@ sudo apt-get install notepadqq
 
 
 
+
+rm -r -f "www/bitrix" - удаление каталога
+	Дополнительно используем ключи -r и -f, которые и задают рекурсивное стирание, 
+	а также отсутствие запрашиваемых консолью подтверждений со стороны пользователя.
+
+
+
 Настройка Git #git
 
 useradd developer // Создаём пользователя
 mkdir /home/developer  // создаём ему папку
 chown -R developer:developer /home/developer
 ...
+
+
 
  
