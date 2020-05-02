@@ -194,10 +194,60 @@ class IndexController extends Controller
 
 Теперь ссылки работают, статьи открываются.
 
+-- Группировка роутов.
+
+Если у нескольких роутов часть url одинакова, то можно применить группировку:
+<?php //D:\code\laravel\routes\web.php
+	// часть url "/admin" одинакова. Можно сгруппировать.
+    Route::get('/admin/articles.html', 'Articles\IndexController@listArticles');
+    Route::get('/admin/article/{id}.html', 'Articles\IndexController@getArticle')
+        ->name('article');
+?>
+
+<?php //D:\code\laravel\routes\web.php
+
+Route::group(['prefix' => 'admin'], function() {
+    Route::get('/articles.html', 'Articles\IndexController@listArticles');
+    Route::get('/article/{id}.html', 'Articles\IndexController@getArticle')
+        ->name('article');
+});
+
+?>
 
 
+-- Роут методом post
+
+<?php //D:\code\laravel\routes\web.php
 
 
+Route::group(['prefix' => 'admin'], function() {
+    Route::get('/articles.html', 'Articles\IndexController@listArticles')
+        ->name('articles');
+    Route::get('/article/{id}.html', 'Articles\IndexController@getArticle')
+        ->name('article');
+    Route::post('/articles.html', 'Articles\IndexController@saveArticle')
+        ->name('articles'); // Такое же имя допустимо, так как другой метод.
+});
+
+Добавим форму для ввода новой статьи
+... //D:\code\laravel\resources\views\articles\listArticles.blade.php
+<div>
+    <form action="{{route('articles')}}" method="post">
+        @csrf  //нужно для безопасности ввода
+        <input type="text" name="article"><button type="submit">OK</button>
+    </form>
+</div>
+
+<?php  //D:\code\laravel\app\Http\Controllers\Articles\IndexController.php
+// Добавим метод сохранения статьи
+public function saveArticle(Request $request) {
+        //dd($request->all()); - смотрим что пришло в request
+        $all = $request->all();
+        $article = $all['article'];
+        $this->articles[] = $article; // Добавляем новую статью
+        return redirect()->route('articles'); // перенаправляем обратно на роут.
+    }
+?>
 
 
 
