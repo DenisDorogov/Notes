@@ -1,6 +1,33 @@
-//Локальное хранилище #localStorage
+--------------------------|||   Массивы   |||----------------------------------
+//#array
 
-https://tproger.ru/articles/localstorage/
+
+
+----------------------------|   Методы   |-------------------------------------
+Array.prototype.length //Возвращает длинну массива
+Array.prototype.fill() //заполняет все элементы массива одним значением.
+Array.prototype.filter()// создаёт фильтрованный передаваемой функцией массив 
+Array.prototype.reduce() //Применяет функцию к каждому элементу массива
+Array.prototype.find() //Возвращает значение найденного элемента
+Array.prototype.findIndex() //Возвращает индекс найденного элемента
+Array.prototype.map() // новый массив с результатом вызова указанной функции
+Array.prototype.pop()//удаляет последний эл-т из массива и возвращает его знач.
+Array.prototype.push()//Добавляет эл-т в конец массива
+Array.prototype.sort() //Сортирует имеющийся массив
+Array.prototype.slice()//Возвращает новый массив от и до индекса
+Array.prototype.splice()//Изменяет удаляя и добавляя элементы.
+
+
+
+-------------------------------<      >----------------------------------------
+
+
+
+
+--------------------|||   Локальное хранилище   |||----------------------------
+//#localStorage
+
+// https://tproger.ru/articles/localstorage/
 
 localStorage.setItem('ключ', 'значение'); 
 	//Метод который добавляет в localStorage новый ключ со значением (а если такой ключ уже существует, то перезаписывает новым значением). Пишем, например, localStorage.setItem(‘myKey’, ‘myValue’);
@@ -13,3 +40,318 @@ localStorage.removeItem("Ключ");
 
 localStorage.clear();
 	//Очищаем все хранилище
+	
+	
+	
+	
+---------------------------|||   Промисы   |||---------------------------------
+#promise #then #cacth #finally
+
+//Синтаксис
+new Promise(executor); 
+//executor Объект функции с двумя аргументами функциями resolve и reject.
+/*executor описывает выполнение какой-то асинхронной работы, по завершении 
+которой необходимо вызвать функцию resolve или reject */
+new Promise(function(resolve, reject) { ... });
+/*
+Promise может находиться в трёх состояниях:
+ожидание (pending): начальное состояние, не исполнен и не отклонён.
+исполнено (fulfilled): операция завершена успешно.
+отклонено (rejected): операция завершена с ошибкой.
+*/
+
+console.log('Request data...');
+
+const p = new Promise( function(resolve, reject) {
+    setTimeout(() => { // Эмуляция задержки передачи данных
+        console.log('Preparing data...');
+        const BackendData = {
+            server: 'aws',
+            port:2000,
+            status: 'working'
+        }
+        resolve(BackendData);//при успешном выполнении передаём данные в p.then
+		//Функция, которая будет выполнена, когда код завершится удачно
+    }, 2000);
+});
+
+p.then( (data) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => { //Имитация задержки получения данных с сервера
+            data.modified = true;
+            resolve(data);
+            // reject(data); получаем в случае ошибки, и передаём в .cacth
+        }, 2000)
+    })
+}).then((clientData) => {
+    console.log('Data recived', clientData);
+    clientData.fromPromise = true;
+    return clientData;
+}).then( data => {
+    console.log('Modified', data);
+}).catch((err) => console.error('Error:', err)) //Метод вызывается в случае ошибки
+.finally(() => console.log('Finally')) //Вызывается в конце в любом случае
+
+
+-----------------------<   Упрощённая запись   >-------------------------------
+//Сделаем функцию, которая выводит текст в консоль с задержкой по времени
+
+// Укороченная запись
+const sleep = ms => new Promise(resolve => setTimeout(() => resolve(), ms))
+
+// Более подробно.
+const sleep = function(ms) {
+    return new Promise( function(resolve) {
+        setTimeout( () => resolve(), ms);
+    })
+}
+
+sleep(2000).then( () => console.log('After 2 seconds'));
+// Выводит запись через две секунды
+
+ sleep(2000).then( () => console.log('After 2 seconds'));
+ sleep(3000).then( () => console.log('After 3 seconds'));
+ 
+ 
+ ----------------------------<   Урок   >--------------------------------------
+ #promise
+ // https://www.youtube.com/watch?v=Sr0WT-XHwd0
+	 let a = 7;
+	 
+
+	 
+	 let b = new Promise( function(resolve, reject) {
+		setTimeout( () => {
+		 resolve(a = 99);
+	 }, 2000);
+	 });
+	 
+	 b.then( function(){
+		  console.log(a);
+	 });
+ 
+ 
+
+ 
+ 
+ 
+
+------------------------<  Глобальные методы    >------------------------------
+Promise.all([sleep(2000), sleep(5000)])
+    .then(() => {
+        console.log('All promises');
+    })
+// then сработает после выполнения всех промисов
+
+Promise.race([sleep(2000), sleep(5000)]).then( () => {
+        console.log('Race promises');
+    })
+// сработает по первому промису из массива
+
+
+
+
+
+
+--------------------|||   Асинхронные запросы   |||----------------------------
+#AJAX #XMLHttpRequest #fetch
+
+// https://jsonplaceholder.typicode.com/ - тестовый сервер. 
+// Там можно взять url для теста ответа сервера
+
+-------------------------|   XMLHttpRequest   |--------------------------------
+#XMLHttpRequest
+
+//Старый способ:
+var xhr; 
+if (window.XMLHttpRequest) { 
+	// Chrome, Mozilla, Opera, Safari 
+	xhr = new XMLHttpRequest(); 
+} else if (window.ActiveXObject) {
+	// Для Internet Explorer 
+	xhr = new ActiveXObject("Microsoft.XMLHTTP"); 
+	}
+xhr.open('GET', '/ajax.js');
+xhr.send();
+
+xhr.onreadystatechange = () => { //Событие при смене состояния объекта
+	if (xhr.readyState === XMLHttpRequest.DONE) { //Когда состояние == DONE...
+	//...когда запрос выполнен
+		
+		
+	}
+	
+--------------------<   Состояния XMLHttpRequest   >---------------------------
+
+xhr = new XMLHttpRequest() //UNSENT
+xhr.open(...) //OPENED
+xhr.send() //LOADING
+// получает заголовки и переходит в HEADERS_RECEIVED
+// последнее состояние DONE
+
+-------------------------------<   Урок   >------------------------------------
+#XMLHttpRequest
+https://www.youtube.com/watch?v=eKCD9djJQKc&list=WL&index=42
+https://gist.github.com/vladilenm/55757c96182d8d03678aa32b7354fe85
+
+const requestURL = 'https://jsonplaceholder.typicode.com/users'
+
+function sendRequest(method, url, body = null) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+
+    xhr.open(method, url)
+
+    xhr.responseType = 'json' 
+	//Данные получаем в формате JSON (string по умолчанию)
+    xhr.setRequestHeader('Content-Type', 'application/json')
+
+    xhr.onload = () => {
+      if (xhr.status >= 400) { //Проверяем успешность запроса
+        reject(xhr.response)
+      } else {
+        resolve(xhr.response)
+      }
+    }
+
+    xhr.onerror = () => { 
+      reject(xhr.response) // Сработает в случае ошибки
+    }
+
+    xhr.send(JSON.stringify(body))
+  })
+}
+
+sendRequest('GET', requestURL)
+  .then(data => console.log(data))//Выводим полученные данные 
+  .catch(err => console.log(err))//Выводим ошибку
+
+const body = {
+  name: 'Vladilen',
+  age: 26
+}
+
+sendRequest('POST', requestURL, body)
+  .then(data => console.log(data))
+  .catch(err => console.log(err))
+
+	
+	
+----------------------------|   Fetch   |--------------------------------------
+// Пришёл на замену XMLHttpRequest
+
+fetch('http://example.com/movies.json') //Делаем запрос
+  .then((response) => { //Когда получили ответ возвращаем объект,...
+    return response.json(); //... предварительно извлечённый методом json()
+  })
+  .then((data) => { // и только потом...
+    console.log(data); // выводим данные
+  });
+--------------------------|   async/await   |----------------------------------
+
+//Вспомогательная функция возвращает промис через 2 секунды:
+function resolveAfter2Seconds(x) { 
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(x);
+    }, 2000);
+  });
+}
+
+async function add1(x) {
+  const a = await resolveAfter2Seconds(20);// await работает только в async ф.
+  const b = await resolveAfter2Seconds(30);//Выполнится после предыдущего await
+  return x + a + b;
+}
+
+add1(10).then(v => {
+  console.log(v);  // Выведет 60 спустя 4 секунды.
+});
+
+async function add2(x) {
+  const a = resolveAfter2Seconds(20);
+  const b = resolveAfter2Seconds(30);
+  return x + await a + await b; //Выполнятся вместе
+}
+
+add2(10).then(v => {
+  console.log(v);  // Выведет 60 спустя 2 секунды.
+});
+
+
+
+
+-----------------------------|   Урок   |--------------------------------------
+// Из урока: https://www.youtube.com/watch?v=SHiUyM_fFME
+// Имитируем задержки выполнения кода:
+const delay = ms => {
+	return new Promise(r => setTimeout(() => r(), ms));
+}
+
+delay(2000).then(() => console.log('2 sec')); //Реализуется задержка
+
+const url = 'https://jsonplaceholder.typicode.com/todos/1';
+
+function fetchTodos() {
+	console.log('Fetch todo started...');
+	return delay(2000)
+	.then(() => {
+		return fetch(url);
+	})
+	.then(response => response.json());
+}
+
+fetchTodos()
+	.then(data => {
+		console.log('Data: ', data);
+	})
+	.catch(e => console.error(e));
+	
+	
+//Теперь можно записать весь этот код более лаконично:
+async function fetchAsyncTodos() {
+	console.log('Fetch todo started...')
+	try {
+		await delay(2000);
+		const response = await fetch(url); 
+		//Будет ждать выполнения предыдущего await
+		const data = await response.json();
+		console.log('Data: ', data);
+	} catch (e) {
+		console.error(e);
+	} finally {
+		//Код который выполнится в конце
+	}
+}
+
+fetchAsyncTodos();
+fetchAsyncTodos().then() 
+// .then выполнится после того, как выполнится последний await
+
+
+
+-------------------------------<      >----------------------------------------
+
+-----------------------------|||      |||--------------------------------------
+-------------------------------|      |----------------------------------------
+-------------------------------<      >----------------------------------------
+
+-----------------------------|||      |||--------------------------------------
+-------------------------------|      |----------------------------------------
+-------------------------------<      >----------------------------------------
+
+-----------------------------|||      |||--------------------------------------
+-------------------------------|      |----------------------------------------
+-------------------------------<      >----------------------------------------
+
+-----------------------------|||      |||--------------------------------------
+-------------------------------|      |----------------------------------------
+-------------------------------<      >----------------------------------------
+
+-----------------------------|||      |||--------------------------------------
+-------------------------------|      |----------------------------------------
+-------------------------------<      >----------------------------------------
+
+-----------------------------|||      |||--------------------------------------
+-------------------------------|      |----------------------------------------
+-------------------------------<      >----------------------------------------
