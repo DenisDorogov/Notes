@@ -118,8 +118,6 @@ sleep(2000).then( () => console.log('After 2 seconds'));
  // https://www.youtube.com/watch?v=Sr0WT-XHwd0
 	 let a = 7;
 	 
-
-	 
 	 let b = new Promise( function(resolve, reject) {
 		setTimeout( () => {
 		 resolve(a = 99);
@@ -158,6 +156,9 @@ Promise.race([sleep(2000), sleep(5000)]).then( () => {
 
 // https://jsonplaceholder.typicode.com/ - тестовый сервер. 
 // Там можно взять url для теста ответа сервера
+
+//http://latentflip.com - показывает как работает Event loop
+
 
 -------------------------|   XMLHttpRequest   |--------------------------------
 #XMLHttpRequest
@@ -204,7 +205,9 @@ function sendRequest(method, url, body = null) {
 
     xhr.responseType = 'json' 
 	//Данные получаем в формате JSON (string по умолчанию)
+	
     xhr.setRequestHeader('Content-Type', 'application/json')
+	//Добавляем заголовок
 
     xhr.onload = () => {
       if (xhr.status >= 400) { //Проверяем успешность запроса
@@ -218,7 +221,7 @@ function sendRequest(method, url, body = null) {
       reject(xhr.response) // Сработает в случае ошибки
     }
 
-    xhr.send(JSON.stringify(body))
+    xhr.send(JSON.stringify(body))//Объект в строку и отправка
   })
 }
 
@@ -280,8 +283,53 @@ add2(10).then(v => {
 
 
 
+-------------------------------<   Урок   >------------------------------------
+#fetch
+//https://www.youtube.com/watch?v=eKCD9djJQKc&list=WL&index=42
+//https://gist.github.com/vladilenm/55757c96182d8d03678aa32b7354fe85
+
+const requestURL = 'https://jsonplaceholder.typicode.com/users'
+
+function sendRequest(method, url, body = null) {
+  const headers = {
+    'Content-Type': 'application/json'
+  }
+
+  return fetch(url, {
+    method: method,
+    body: JSON.stringify(body),
+    headers: headers
+  }).then(response => {
+    if (response.ok) {
+      return response.json()
+    }
+
+    return response.json().then(error => {
+      const e = new Error('Что-то пошло не так')
+      e.data = error
+      throw e
+    })
+  })
+}
+
+sendRequest('GET', requestURL)
+  .then(data => console.log(data))
+  .catch(err => console.log(err))
+
+const body = {
+  name: 'Vladilen',
+  age: 26
+}
+
+sendRequest('POST', requestURL, body)
+  .then(data => console.log(data))
+  .catch(err => console.log(err))
+
+
+
 
 -----------------------------|   Урок   |--------------------------------------
+#fetch
 // Из урока: https://www.youtube.com/watch?v=SHiUyM_fFME
 // Имитируем задержки выполнения кода:
 const delay = ms => {

@@ -1,0 +1,20 @@
+<div id="app">
+  {{ message }}
+</div>
+
+<script>
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            message: 'Привет, Vue!'
+        }
+    })
+
+</script>
+
+v-bind:title="message" // В титле появляется значение message
+v-if="seen" // видимо, если seen == true
+v-for="todo in todos"
+v-on:click="reverseMessage"
+v-model="message"

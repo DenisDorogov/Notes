@@ -1,0 +1,171 @@
+
+----------------|||  Урок 1. Знакомство с ReactJS. Первые компоненты  |||----------------
+-------<    >--------
+-------<    >--------
+
+_________________________________________________________________________________________
+
+---------------------|||  Урок 2. Жизненный цикл компонента  |||-------------------------
+Статья “Понимание методов жизненного цикла”
+https://medium.com/@baphemot/understanding-react-react-16-3-component-life-cycle-23129bc7a705
+
+Статья “Полное руководство по useEffect”
+https://habr.com/ru/company/ruvds/blog/445276/
+
+Статья “Понимание хуков в React”
+https://medium.com/@dan_abramov/making-sense-of-react-hooks-fdbde8803889#:%7E:text=Hooks%20solve%20exactly%20that%20problem,state%2C%20lifecycle%2C%20and%20context.
+
+Статья о фрагментах
+https://learn-reactjs.ru/core/fragments
+
+
+-------<    >--------
+-------<    >--------
+
+_________________________________________________________________________________________
+
+---------------|||  Урок 3. Virtual DOM. Material UI. PropTypes  |||--------------
+
+Официальный сайт Eslint
+https://eslint.org/
+
+Официальный сайт Prettier
+https://prettier.io/
+
+Статья о Fiber
+https://habr.com/ru/post/444276/
+
+
+-------<    >--------
+-------<    >--------
+
+_________________________________________________________________________________________
+
+
+---------------|||  Урок 4. Children. Роутинг в React  |||--------------
+
+
+Подробно о React.Children
+https://ru.reactjs.org/docs/react-api.html#reactchildren
+
+Функция в качестве children
+https://codedaily.io/tutorials/Using-Functions-as-Children-and-Render-Props-in-React-Components
+
+Render props
+https://ru.reactjs.org/docs/render-props.html
+
+Вложенные маршруты
+https://medium.com/swlh/defining-nested-routes-with-react-router-8f140e87b360
+
+Домашнее задание
+1. Установить react-router-dom. Добавить домашнюю страницу по адресу “/” со списком ссылок на страницу чатов и страницу профиля. 
+2. Добавить страницу профиля (пока не несет никакой функциональности, можно сделать ее пустой). 
+3. Настроить разделение приложения на чаты с помощью роутера (использовать параметры url). 
+Приложение должно корректно работать, если пользователь вводит идентификатор несуществующего чата 
+или если идентификатора чата нет (т.е. адрес “/chats/”). 
+4. * Добавить возможность удаления и добавления чатов.
+-------<    >--------
+-------<    >--------
+
+_________________________________________________________________________________________
+
+---------------|||  Урок 5 Контекст. Компоненты высшего порядка. Знакомство с Redux  |||--------------
+
+Статья “Введение в Redux & React-redux”
+https://gb.ru/lessons/193567/homework
+
+Статья “Как эффективно применять React Context”
+https://gb.ru/lessons/193567/homework
+
+Cтатья “Компоненты высшего порядка”
+https://gb.ru/lessons/193567/homework
+
+Статья “Декораторы в JS”
+https://gb.ru/lessons/193567/homework
+
+
+-------<    >--------
+-------<    >--------
+
+_________________________________________________________________________________________
+
+---------------|||  Урок 6  Погружение в react-redux |||--------------
+
+
+Статья о поверхностном сравнении
+https://javascript.plainenglish.io/the-effect-of-shallow-equality-in-react-85ae0287960c
+ 
+Статья о reselect
+https://habr.com/ru/post/490526/
+
+-------<    >--------
+-------<    >--------
+
+_________________________________________________________________________________________
+
+---------------|||  Урок 7  Redux middlewares. Redux-persist. |||--------------
+
+Функции-генераторы
+https://learn.javascript.ru/generators
+
+Доклад о паттерне “сага”
+https://www.youtube.com/watch?v=xDuwrtwYHu8
+
+Статья о redux-thunk и redux-saga
+https://habr.com/ru/post/351168/
+
+Статья о презентационных компонентах и контейнерах
+https://medium.com/@learnreact/container-components-c0e67432e005
+
+
+-------<    >--------
+-------<    >--------
+
+_________________________________________________________________________________________
+
+---------------|||  Урок 8 Работа с API  |||--------------
+
+Событийный цикл (event loop)
+https://learn.javascript.ru/event-loop
+
+Axios
+https://github.com/axios/axios
+
+Redux-saga-routines
+https://github.com/afitiskin/redux-saga-routines
+
+
+-------<    >--------
+-------<    >--------
+
+
+_________________________________________________________________________________________
+
+---------------|||  Урок 9. Знакомство с Firebase  |||--------------
+
+Статья “Создание чата на Реакт с использованием Firebase”
+https://css-tricks.com/building-a-real-time-chat-app-with-react-and-firebase/
+
+Статья Private Route & Public Route components
+https://medium.com/@thanhbinh.tran93/private-route-public-route-and-restricted-route-with-react-router-d50b27c15f5e
+
+-------<    >--------
+-------<    >--------
+
+_________________________________________________________________________________________
+
+---------------|||  Урок 10. Тестирование и оптимизация приложений на React |||--------------
+
+Статья «Почему я перестал использовать снэпшоты»
+https://medium.com/@tomgold_48918/why-i-stopped-using-snapshot-testing-with-jest-3279fe41ffb2
+
+Статья "Профилирование React приложений"
+https://habr.com/ru/company/ruvds/blog/497988/
+
+Статья Дэна Абрамова “Before you memo”
+https://overreacted.io/before-you-memo/
+
+Моки в Jest
+https://habr.com/ru/company/otus/blog/522500/
+-------<    >--------
+-------<    >--------

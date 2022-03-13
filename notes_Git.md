@@ -30,7 +30,18 @@ https://www.youtube.com/watch?v=SEvR78OhGtw
 <!-- 
 *   [Общее](https://github.com/cyberspacedk/Git-commands/tree/master/git#Общее)
 *   [Консольные команды](https://github.com/cyberspacedk/Git-commands/tree/master/git#Консольные-команды)
-*   [Примеры реальной работы](https://github.com/cyberspacedk/Git-commands/tree/master/git#Примеры) -->
+*   [Примеры реальной работы](https://github.com/cyberspacedk/Git-commands/tree/master/git#Примеры) 
+
+* Самоучитель по Git https://githowto.com/ru  
+Документация на английском https://git-scm.com/docs
+Руководство по git на русском https://git-scm.com/book/ru/v2
+
+Основы BASH https://linuxgeeks.ru/bash-intro.htm
+
+
+
+
+-->
 
 
 #.gitignore 
