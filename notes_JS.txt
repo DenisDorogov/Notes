@@ -47,6 +47,9 @@ localStorage.clear();
 ---------------------------|||   Промисы   |||---------------------------------
 #promise #then #cacth #finally
 
+//Хорошая статья по промисам
+https://habr.com/ru/post/651037/#05
+
 //Синтаксис
 new Promise(executor); 
 //executor Объект функции с двумя аргументами функциями resolve и reject.

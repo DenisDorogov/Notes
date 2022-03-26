@@ -14,3 +14,27 @@ https://github.com/fuzzdb-project/fuzzdb
 
 ifup eth1 //Включение "разъёма" в виртуальной машине учебного сервера.
 
+https://haveibeenpwned.com/ Сайт проверки утекающих паролий.
+https://www.passwordmonster.com/
+
+Штатные парольные словари Kali Linux;
+/usr/share/worldlists
+
+
+Матрица аттак
+https://attack.mitre.org/matrices/enterprise/
+
+
+Видео- 00:58:31 - Сканеры уязвимости.
+
+01:03:09 - Сканирование сетевых портов
+nmap 192.168.56.11
+
+01:05:40 - делать заметки CherryTree
+
+01:08:04 - Брутфорс каталога
+dirb http://192.168.56.11
+
+nikto - сканер
+
+https://tryhackme.com/
